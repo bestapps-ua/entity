@@ -2,8 +2,11 @@ import Entity from "../../entity/Entity";
 import ICacheFactoryModel from "../cache/ICacheFactoryModel";
 
 interface IEntityModelOptions {
-    cache: {
-        can: boolean;
+    cache?: {
+        can: {
+            store: boolean;
+            fetch: boolean;
+        };
         ttl: number;
         model: ICacheFactoryModel;
     },

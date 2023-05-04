@@ -17,7 +17,7 @@ import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntityS
 
 class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
-    protected options: IEntitySQLModelOptions;
+    public options: IEntitySQLModelOptions;
     protected _table: string;
     private _sql: any;
 
@@ -25,9 +25,30 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         super(options);
         this.table = options.table;
         this.sql = options.sql;
+        this.options.make = this.options.make || {
+            schemas: [],
+        }
+        this._fillDefault();
     }
 
-    protected get table(): string {
+    private _fillDefault() {
+        const fields = [
+            {
+                field: 'id',
+            },
+            {
+                field: 'uid',
+            },
+            {
+                field: 'created',
+            }
+        ];
+        for (const field of fields) {
+            this.options.make.schemas.push(field);
+        }
+    }
+
+    get table(): string {
         if (!this._table) throw 'Please init options.table';
         return this._table;
     }
@@ -37,7 +58,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         return this.escapeField(table);
     }
 
-    protected set table(value) {
+    set table(value) {
         this._table = value;
     }
 
@@ -70,7 +91,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                         return callback && callback(err);
                     }
                     this.make(row, async (err, itemData) => {
-                        if(err) return callback && callback(err);
+                        if (err) return callback && callback(err);
+                        //@ts-ignore
                         let entity = new this._entity(itemData);
                         await this.cacheSetAsync(id, entity);
                         callback && callback(undefined, entity);
@@ -101,18 +123,45 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         for (const schema of schemas) {
             p.push(new Promise(async (resolve, reject) => {
                 let item = undefined;
-                if(schema.source.model){
+                let source = schema.source ? schema.source : {
+                    id: schema.field,
+                }
+                const entityId = schema.source.id;
+                if (source.model) {
+                    if (schema.source.model === 'this') {
+                        schema.source.model = this;
+                    }
+                    const model = schema.source.model as IEntitySQLModel;
+
+                    if (schema.source.optional && !data[entityId]) {
+                        return resolve(item);
+                    }
                     try {
-                        item = await schema.source.model.getAsync(data[schema.source.id]);
-                    }catch (e){
+                        //TODO: lazy load from config
+                        if (schema.source.isLazy) {
+                            item = (() => {
+                                return function lazy() {
+                                    return (async () => {
+                                        try {
+                                            return await model.getAsync(data[entityId]);
+                                        } catch (e) {
+                                            console.log('[error lazy load]', entityId, e);
+                                        }
+                                    });
+                                }
+                            })();
+                        } else {
+                            item = await model.getAsync(data[entityId]);
+                        }
+                    } catch (e) {
                         errors.push({
                             field: schema.field,
-                            sourceId: schema.source.id,
+                            sourceId: entityId,
                             error: e,
                         });
                     }
-                }else{
-                    item = data[schema.source.id];
+                } else {
+                    item = data[entityId];
                 }
                 itemData[schema.field] = item;
                 resolve(item);
@@ -175,9 +224,10 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 let row = rows[i];
                 try {
                     let itemData = await this.makeAsync(row);
+                    //@ts-ignore
                     let entity = new this._entity(itemData);
                     resolve(entity);
-                }catch (e){
+                } catch (e) {
                     reject(e);
                 }
             }));
@@ -287,13 +337,13 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             SELECT COUNT(*) cnt
             FROM ${this.tableEscaped}
         `;
-        let {filter, q} = this.processFilter(params.filters);
+        let {q, values} = this.processFilter(params.filters);
         query += q;
 
         query += this.processGroup(params.group);
 
         query += `LIMIT 1`;
-        this.sql.getOne(query, filter.values, (err, row) => {
+        this.sql.getOne(query, values, (err, row) => {
             let cnt = 0;
             if (row) cnt = row.cnt;
             callback && callback(err, cnt);
@@ -312,7 +362,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         let q = `
             DELETE
             FROM ${this.tableEscaped}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
         this.sql.query(q, item.id, async (err) => {
             await this.cacheInvalidateAsync(item.id);
@@ -327,6 +378,17 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 resolve();
             });
         });
+    }
+
+    async truncate() {
+        return new Promise((resolve, reject) => {
+            let q = `TRUNCATE ${this.tableEscaped}`;
+            this.sql.query(q, undefined, async () => {
+                await this.invalidateAll();
+                resolve();
+            });
+        });
+
     }
 }
 

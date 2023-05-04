@@ -5,8 +5,8 @@ import CacheEntity from "../../entity/CacheEntity";
 
 interface ICacheFactoryModel {
     options: ICacheFactoryModelOptions;
-    get(id: number | string, options: ICacheOptions = {}): Promise<Entity>;
-    set(id: number | string, data: Entity, ttl: number, options: ICacheOptions = {}): Promise<CacheEntity>;
+    get(id: number | string, options?: ICacheOptions): Promise<Entity>;
+    set(id: number | string, data: Entity, ttl: number, options?: ICacheOptions): Promise<CacheEntity>;
     invalidate(id: number | string);
     invalidateAll();
 }

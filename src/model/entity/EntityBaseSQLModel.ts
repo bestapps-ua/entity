@@ -2,8 +2,9 @@ import EntityModel from "./EntityModel";
 import IEntityItemsWhere from "../../interface/entity/items/IEntityItemsWhere";
 import IEntityItemsFilter from "../../interface/entity/items/IEntityItemsFilter";
 import IEntityItemsSort from "../../interface/entity/items/IEntityItemsSort";
+import EntityCacheModel from "./EntityCacheModel";
 
-class EntityBaseSQLModel extends EntityModel {
+class EntityBaseSQLModel extends EntityCacheModel {
     protected escapeField(field: string) {
         function esc(key: string): string {
             if (key.includes('*')) return key;

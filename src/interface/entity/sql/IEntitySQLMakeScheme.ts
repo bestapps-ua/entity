@@ -4,7 +4,9 @@ interface IEntitySQLMakeScheme {
     field: string;
     source: {
         id: string;
-        model?: IEntitySQLModel;
+        model?: IEntitySQLModel|string;
+        isLazy?: boolean;
+        optional?: boolean;
     };
 }
 

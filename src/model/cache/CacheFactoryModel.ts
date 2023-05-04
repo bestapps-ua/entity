@@ -12,7 +12,7 @@ const CACHE_TYPE_MEMORY = 'memory';
 
 class CacheFactoryModel implements ICacheFactoryModel {
     private model: ICacheModel;
-    private options: ICacheFactoryModelOptions;
+    public options: ICacheFactoryModelOptions;
 
     constructor(options: ICacheFactoryModelOptions) {
         this.options = Object.assign({

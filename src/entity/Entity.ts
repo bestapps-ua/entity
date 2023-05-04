@@ -12,16 +12,28 @@ class Entity {
         this._created = data.created;
     }
 
+    /**
+     * For lazy load please use this method
+     * @param property
+     * @private
+     */
+    protected _get(property){
+        if(typeof this[property] === 'function') {
+            return this[property]();
+        }
+        return this[property];
+    }
+
     get data(){
         return this._data;
     }
 
     get id(){
-        return this._id;
+        return this._get('_id');
     }
 
     get created(){
-        return this._created;
+        return this._get('_created');
     }
 
     getClassName(){
@@ -39,14 +51,16 @@ class Entity {
                 //console.log(this[properties[i]].allData);
                 data[property] = this[properties[i]].allData;
             }else {
-                data[property] = this[properties[i]];
+                data[property] = (async () => {
+                    await this[properties[i]];
+                });
             }
         }
         return data;
     }
 
     get uid(): string {
-        return this._uid;
+        return this._get('_uid');
     }
 
     set uid(value: string) {
