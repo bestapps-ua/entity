@@ -2,7 +2,8 @@ import IEntitySQLModel from "./IEntitySQLModel";
 
 interface IEntitySQLMakeScheme {
     field: string;
-    source: {
+    type?: string;
+    source?: {
         id: string;
         model?: IEntitySQLModel|string;
         isLazy?: boolean;

@@ -5,7 +5,7 @@
         "suppressImplicitAnyIndexErrors": true,
         "suppressExcessPropertyErrors": true,
         "allowUnreachableCode": true,
-        "noEmitOnError": true,
+        
         "strict": false,
         "skipLibCheck": true,
         "module": "commonjs",
@@ -21,7 +21,8 @@
         "outDir": "dist"
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 
 }

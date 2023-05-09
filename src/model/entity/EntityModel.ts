@@ -8,6 +8,7 @@ class EntityModel {
 
     constructor(options: IEntityModelOptions) {
         this.entity = options.entity;
+        this.options = options;
     }
 
     get entity() {

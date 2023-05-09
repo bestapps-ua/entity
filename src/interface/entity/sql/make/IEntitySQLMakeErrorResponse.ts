@@ -1,6 +1,6 @@
 interface IEntitySQLMakeErrorResponse {
     error: any;
-    field: string;
-    sourceId: string;
+    field?: string;
+    sourceId?: string;
 }
 export default IEntitySQLMakeErrorResponse;

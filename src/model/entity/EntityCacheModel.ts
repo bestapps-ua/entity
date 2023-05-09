@@ -8,6 +8,8 @@ import IEntityModelOptions from "../../interface/entity/IEntityModelOptions";
 
 class EntityCacheModel extends EntityModel {
 
+    protected classesInvolved: [Entity];
+
     constructor(options: IEntityModelOptions) {
         options = Object.assign({
             cache: {
@@ -19,6 +21,7 @@ class EntityCacheModel extends EntityModel {
             }
         }, options);
         super(options);
+        this.classesInvolved = this.getEntityClassesInvolved();
     }
 
     protected canStore(): boolean {
@@ -75,6 +78,18 @@ class EntityCacheModel extends EntityModel {
             }
             resolve(await this.get(id, callback));
         });
+    }
+
+    getEntityClassesInvolved(){
+        return [];
+    }
+
+    async serialize(data: Entity){
+
+    }
+
+    async unserialize(data: string){
+
     }
 }
 

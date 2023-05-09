@@ -1,15 +1,15 @@
 class Entity {
 
-    private _data: any;
+    protected _params: any;
     private _id: number;
     private _created: number;
     private _uid: string;
 
-    constructor(data) {
-        this._data = data;
-        this._id = data.id;
-        this._uid = data.uid;
-        this._created = data.created;
+    constructor(params) {
+        this._params = params;
+        this._id = params.id;
+        this._uid = params.uid;
+        this._created = params.created;
     }
 
     /**
@@ -17,40 +17,39 @@ class Entity {
      * @param property
      * @private
      */
-    protected _get(property){
-        if(typeof this[property] === 'function') {
+    protected _get(property) {
+        if (typeof this[property] === 'function') {
             return this[property]();
         }
         return this[property];
     }
 
-    get data(){
-        return this._data;
+    get params() {
+        return this._params;
     }
 
-    get id(){
+    get id() {
         return this._get('_id');
     }
 
-    get created(){
+    get created() {
         return this._get('_created');
     }
 
-    getClassName(){
+    getClassName() {
         return this.constructor.name.toLowerCase();
     }
 
-    get allData(){
+    get allData() {
         let properties = Object.getOwnPropertyNames(this);
         let data = {};
-        for(let i = 0; i < properties.length; i++){
+        for (let i = 0; i < properties.length; i++) {
             let property = properties[i];
             property = property.substring(1);
 
-            if(this[properties[i]] instanceof Entity) {
-                //console.log(this[properties[i]].allData);
+            if (this[properties[i]] instanceof Entity) {
                 data[property] = this[properties[i]].allData;
-            }else {
+            } else {
                 data[property] = (async () => {
                     await this[properties[i]];
                 });

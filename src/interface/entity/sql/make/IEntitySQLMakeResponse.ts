@@ -4,7 +4,7 @@ interface IEntitySQLMakeResponse {
     (error: {
         data: object;
         errors: IEntitySQLMakeErrorResponse[];
-    }, data: object);
+    }, data?: object);
 }
 
 export default IEntitySQLMakeResponse;

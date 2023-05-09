@@ -5,9 +5,7 @@ import Entity from "../../../entity/Entity";
 interface IEntitySQLModelOptions extends IEntityModelOptions{
     sql: any;
     table: string;
-    make: {
-        schemas: IEntitySQLMakeScheme[];
-    };
+    schemas: IEntitySQLMakeScheme[];
 }
 
 export default IEntitySQLModelOptions;

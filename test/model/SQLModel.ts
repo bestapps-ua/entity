@@ -7,7 +7,7 @@ let config = require('config');
  */
 let Wap3LibSQL = require('@bestapps/raks-sql').Wap3LibSQL;
 
-export default new Wap3LibSQL({
+let sql = new Wap3LibSQL({
     showLog: true,
     db: {
         host: config.db.host,
@@ -16,3 +16,13 @@ export default new Wap3LibSQL({
         database: config.db.name
     }
 });
+
+(async() => {
+    await new Promise((resolve) => {
+        sql.connect(() => {
+            resolve();
+        });
+    });
+})();
+
+export default sql;

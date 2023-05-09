@@ -1,34 +1,30 @@
 import sql from './SQLModel';
 import EntitySQLModel from "../../src/model/entity/EntitySQLModel";
 import IEntitySQLModelOptions from "../../src/interface/entity/sql/IEntitySQLModelOptions";
-import Main from "../entity/Main";
+import MainModel from "./MainModel";
+import Child from "../entity/Child";
 
 let options: IEntitySQLModelOptions = {
     sql,
     table: 'main',
-    entity: Main,
+    entity: Child,
     schemas: [
         {
-            field: 'parent',
+            field: 'main',
             source: {
-                id: 'pid',
-                model: 'this',
+                id: 'main_id',
+                model: MainModel,
                 isLazy: true,
-                optional: true,
             },
         },
         {
             field: 'name'
         },
-        {
-            field: 'data',
-            type: 'json',
-        },
     ]
 };
 
-class MainModel extends EntitySQLModel {
+class ChildModel extends EntitySQLModel {
 
 }
 
-export default new MainModel(options);
+export default new ChildModel(options);
