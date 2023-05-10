@@ -6,10 +6,10 @@ class Child extends Entity {
     private _name: string;
     private _main: Main;
 
-    constructor(data) {
-        super(data);
-        this._name = data.name;
-        this._main = data.main;
+    constructor(props) {
+        super(props);
+        this._name = props.name;
+        this._main = props.main;
     }
 
     get name(): string {

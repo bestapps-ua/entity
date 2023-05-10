@@ -1,15 +1,15 @@
 class Entity {
 
-    protected _params: any;
+    protected _props: any;
     private _id: number;
     private _created: number;
     private _uid: string;
 
-    constructor(params) {
-        this._params = params;
-        this._id = params.id;
-        this._uid = params.uid;
-        this._created = params.created;
+    constructor(props) {
+        this._props = props;
+        this._id = props.id;
+        this._uid = props.uid;
+        this._created = props.created;
     }
 
     /**
@@ -19,13 +19,13 @@ class Entity {
      */
     protected _get(property) {
         if (typeof this[property] === 'function') {
-            return this[property]();
+            return this[property]()();
         }
         return this[property];
     }
 
-    get params() {
-        return this._params;
+    get props() {
+        return this._props;
     }
 
     get id() {

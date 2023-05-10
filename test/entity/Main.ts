@@ -6,11 +6,11 @@ class Main extends Entity {
     private _parent: Main;
     private _data: any;
 
-    constructor(data) {
-        super(data);
-        this._name = data.name;
-        this._parent = data.parent;
-        this._data = data.data;
+    constructor(props) {
+        super(props);
+        this._name = props.name;
+        this._parent = props.parent;
+        this._data = props.data;
     }
 
     get data(): any {

@@ -1,26 +1,22 @@
 import mainModel from "../model/MainModel";
 import Main from "../entity/Main";
 import sql from "../model/SQLModel";
+import testHelper from "../helper/TestHelper";
+import mainEntityHelper from "../helper/MainEntityHelper";
 
-beforeAll(done => {
-    done();
-})
 
-afterAll(done => {
-    sql.connectionEnd(() => {
-        done();
+describe('Create', () => {
+    it('Main', async () => {
+        testHelper.prepare();
+        const entity = await mainEntityHelper.generate();
+        let data = await mainModel.createAsync(entity) as Main;
+        await mainEntityHelper.checkCreated(entity.props, data);
     });
-})
 
-test('create main', async (done) => {
-    let entity = new Main({
-        name: `test${Date.now()}`,
-        data: {
-            item: 1,
-            hello: 'world',
-        }
+    it('Main with Parent', async () => {
+        testHelper.prepare();
+        const entity = await mainEntityHelper.generate({withParent: true});
+        let data = await mainModel.createAsync(entity) as Main;
+        await mainEntityHelper.checkCreated(entity.props, data, {withParent: true});
     });
-    let data = await mainModel.createAsync(entity);
-    console.log('[RESULT]',data);
-    done();
 });

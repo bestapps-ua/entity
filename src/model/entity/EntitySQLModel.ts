@@ -11,6 +11,8 @@ import IEntitySQLMakeScheme from "../../interface/entity/sql/IEntitySQLMakeSchem
 import IEntityResponse from "../../interface/entity/IEntityResponse";
 import IEntitySQLMakeResponse from "../../interface/entity/sql/make/IEntitySQLMakeResponse";
 import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntitySQLMakeListResponse";
+import globalEventModel from "../event/GlobalEventModel";
+import {EVENT_ENTITY_CREATED} from "../event/Events";
 
 let uuid4 = require('uuid/v4');
 
@@ -144,7 +146,6 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                                 return function lazy() {
                                     return (async () => {
                                         try {
-                                            console.log('[LAZY]');
                                             return await model.getAsync(data[entityId]);
                                         } catch (e) {
                                             console.log('[error lazy load]', entityId, e);
@@ -440,7 +441,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         }
     }
 
-    public async createAsync(entity: Entity) {
+    public async createAsync(entity: Entity): Promise<Entity> {
         return new Promise((resolve, reject) => {
             let p = [];
             for (const schema of this.schemas) {
@@ -484,7 +485,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                         if (!createdEntity) {
                             throw 'not found'
                         }
-                        //TODO: send event created!
+                        globalEventModel.getEmitter().emit(EVENT_ENTITY_CREATED, {entity: createdEntity});
                         resolve(createdEntity);
                     } catch (err) {
                         console.log('[err create get]', err, id, entity);
