@@ -13,9 +13,9 @@ let options: IEntitySQLModelOptions = {
             source: {
                 id: 'pid',
                 model: 'this',
-                isLazy: true,
-                optional: true,
             },
+            isLazy: true,
+            optional: true,
         },
         {
             field: 'name'

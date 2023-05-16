@@ -5,10 +5,12 @@ import IEntityItemsSort from "../../interface/entity/items/IEntityItemsSort";
 import Entity from "../../entity/Entity";
 import CacheEntity from "../../entity/CacheEntity";
 import IEntityModelOptions from "../../interface/entity/IEntityModelOptions";
+import {CACHE_TYPE_MEMORY, CacheFactoryModel} from "../cache/CacheFactoryModel";
 
 class EntityCacheModel extends EntityModel {
 
     protected classesInvolved: [Entity];
+    private entityClassname: string;
 
     constructor(options: IEntityModelOptions) {
         options = Object.assign({
@@ -18,10 +20,15 @@ class EntityCacheModel extends EntityModel {
                     fetch: false,
                 },
                 ttl: 0,
-            }
+                model: new CacheFactoryModel({
+                    type: CACHE_TYPE_MEMORY,
+                }),
+            },
         }, options);
         super(options);
         this.classesInvolved = this.getEntityClassesInvolved();
+        // @ts-ignore
+        this.entityClassname = (new this._entity({})).getClassName();
     }
 
     protected canStore(): boolean {
@@ -33,7 +40,7 @@ class EntityCacheModel extends EntityModel {
     }
 
     private getCacheId(id: string | number): string {
-        return `${this._entity.getClassName()}::${id}`;
+        return `${this.entityClassname}::${id}`;
     }
 
     cacheGet(id: string | number, callback) {

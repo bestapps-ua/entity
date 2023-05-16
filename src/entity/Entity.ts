@@ -66,6 +66,16 @@ class Entity {
         this._uid = value;
     }
 
+    async getModifiedProperties() {
+        let modified = [];
+        for (const property in this.props) {
+            if(this.props[property] !== this[property]) {
+                modified.push(property);
+            }
+        }
+        return modified;
+    }
+
 }
 
 export default Entity;

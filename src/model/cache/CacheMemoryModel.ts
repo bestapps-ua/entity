@@ -8,9 +8,6 @@ import ICacheModelOptions from "../../interface/cache/ICacheModelOptions";
 
 let storage = new Map();
 
-/**
- * TODO: invalidate later!
- */
 class CacheMemoryModel implements ICacheModel {
     constructor(options: ICacheModelOptions) {
     }

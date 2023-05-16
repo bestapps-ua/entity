@@ -12,7 +12,7 @@ import IEntityResponse from "../../interface/entity/IEntityResponse";
 import IEntitySQLMakeResponse from "../../interface/entity/sql/make/IEntitySQLMakeResponse";
 import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntitySQLMakeListResponse";
 import globalEventModel from "../event/GlobalEventModel";
-import {EVENT_ENTITY_CREATED} from "../event/Events";
+import {EVENT_ENTITY_CREATED, EVENT_ENTITY_UPDATED} from "../event/Events";
 
 let uuid4 = require('uuid/v4');
 
@@ -137,11 +137,11 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                     }
                     const model = schema.source.model as IEntitySQLModel;
 
-                    if (schema.source.optional && !data[entityId]) {
+                    if (schema.optional && !data[entityId]) {
                         return resolve(item);
                     }
                     try {
-                        if (schema.source.isLazy) {
+                        if (schema.isLazy) {
                             item = (() => {
                                 return function lazy() {
                                     return (async () => {
@@ -546,6 +546,73 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         });
     }
 
+    findFieldSchema(id: string): IEntitySQLMakeScheme {
+        let schemas = this.schemas;
+        for (const schema of schemas) {
+            if (schema.field === id) return schema;
+        }
+    }
+
+    async updateAsync(entity: Entity): Promise<Entity> {
+        let properties = await entity.getModifiedProperties();
+        if (properties.length === 0) return entity;
+        let names = [];
+        let values = [];
+        for (const property of properties) {
+            const scheme = this.findFieldSchema(property);
+            let name = "`" + (scheme.source ? scheme.source.id : scheme.field) + "` = ?";
+            names.push(name);
+            if (scheme.type === 'json') {
+                values.push(JSON.stringify(entity[property]));
+            } else if (scheme.source && scheme.source.model) {
+                let d = await entity[property];
+                if (!d && scheme.optional) {
+                    values.push(null);
+                    continue;
+                }else if (d){
+                    values.push(d.id);
+                    continue;
+                }
+                throw `No data found for ${property} in model`;
+            } else {
+                values.push(entity[property]);
+            }
+
+        }
+
+        values.push(entity.id);
+
+        const q = `
+            UPDATE ${this.tableEscaped}
+            SET ${names.join(', ')}
+            WHERE id = ?
+            LIMIT 1
+        `;
+        return new Promise((resolve, reject) => {
+            this.sql.query(q, values, async (err) => {
+                if (err) return reject(err);
+                await this.cacheInvalidateAsync(entity.id);
+                try {
+                    let item = await this.getAsync(entity.id);
+                    globalEventModel.getEmitter().emit(EVENT_ENTITY_UPDATED, {entity: item});
+                    resolve(item);
+                } catch (err) {
+                    reject(err)
+                }
+            });
+        });
+    }
+
+    update(entity: Entity, callback) {
+        (async () => {
+            try {
+                let item = await this.updateAsync(entity);
+                callback && callback(undefined, item);
+            } catch (err) {
+                callback && callback(err);
+            }
+        })();
+    }
 }
 
 export default EntitySQLModel;

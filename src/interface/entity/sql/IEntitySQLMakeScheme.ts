@@ -6,9 +6,9 @@ interface IEntitySQLMakeScheme {
     source?: {
         id: string;
         model?: IEntitySQLModel|string;
-        isLazy?: boolean;
-        optional?: boolean;
     };
+    isLazy?: boolean;
+    optional?: boolean;
 }
 
 export default IEntitySQLMakeScheme;

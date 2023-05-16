@@ -22,17 +22,23 @@ class MainEntityHelper {
         return entity;
     }
 
-    async checkCreated(source, entity: Main, options: any = {}) {
+    async checkAllData(source, entity: Main, options: any = {}) {
         expect(entity.id).toBeGreaterThan(0);
         expect(entity.created).toBeGreaterThan(0);
         expect(entity.uid).toBeDefined();
         expect(source.name).toBe(entity.name);
         expect(JSON.stringify(source.data)).toBe(JSON.stringify(entity.data));
-        if(options.withParent){
+        if (options.withParent) {
             let parent = await entity.parent;
             expect(parent instanceof Main).toBe(true);
-            await this.checkCreated(parent.props, parent);
+            await this.checkAllData(parent.props, parent);
         }
+    }
+
+    async create(options: any = {}): Promise<Main> {
+        const entity = await this.generate(options);
+        let data = await mainModel.createAsync(entity) as Main;
+        return data;
     }
 }
 

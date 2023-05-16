@@ -8,7 +8,7 @@ let config = require('config');
 let Wap3LibSQL = require('@bestapps/raks-sql').Wap3LibSQL;
 
 let sql = new Wap3LibSQL({
-    showLog: true,
+    showLog: false,
     db: {
         host: config.db.host,
         user: config.db.user,

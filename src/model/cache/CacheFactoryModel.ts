@@ -14,7 +14,7 @@ class CacheFactoryModel implements ICacheFactoryModel {
     private model: ICacheModel;
     public options: ICacheFactoryModelOptions;
 
-    constructor(options: ICacheFactoryModelOptions) {
+    constructor(options: ICacheFactoryModelOptions = {}) {
         this.options = Object.assign({
             type: CACHE_TYPE_MEMORY
         }, options);
