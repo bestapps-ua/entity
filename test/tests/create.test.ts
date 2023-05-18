@@ -24,7 +24,10 @@ describe('Create', () => {
 
     it('Event', async (done) => {
         testHelper.prepare();
+        let can = true;
         globalEventModel.getEmitter().on(EVENT_ENTITY_CREATED, async (data) => {
+            if(!can) return ;
+            can = false;
             await mainEntityHelper.checkAllData(data.entity.props, data.entity);
             done();
         });

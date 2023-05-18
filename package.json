@@ -20,6 +20,7 @@
         "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
         "prod": "tsc && node ./dist/index.js",
         "test": "NODE_ENV= jest",
-        "unit": "npm run test --runInBand --detectOpenHandles --forceExit"
+        "unit": "npm run test --runInBand --detectOpenHandles --forceExit",
+        "unitScript": "npm run test --runInBand --detectOpenHandles --forceExit -- "
     }
 }

@@ -12,7 +12,7 @@ import IEntityResponse from "../../interface/entity/IEntityResponse";
 import IEntitySQLMakeResponse from "../../interface/entity/sql/make/IEntitySQLMakeResponse";
 import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntitySQLMakeListResponse";
 import globalEventModel from "../event/GlobalEventModel";
-import {EVENT_ENTITY_CREATED, EVENT_ENTITY_UPDATED} from "../event/Events";
+import {EVENT_ENTITY_CREATED, EVENT_ENTITY_DATA_UPDATED, EVENT_ENTITY_UPDATED} from "../event/Events";
 
 let uuid4 = require('uuid/v4');
 
@@ -485,7 +485,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                         if (!createdEntity) {
                             throw 'not found'
                         }
-                        globalEventModel.getEmitter().emit(EVENT_ENTITY_CREATED, {entity: createdEntity});
+                        globalEventModel.getEmitter().emit(EVENT_ENTITY_CREATED, {entity: createdEntity, source: entity});
                         resolve(createdEntity);
                     } catch (err) {
                         console.log('[err create get]', err, id, entity);
@@ -569,7 +569,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 if (!d && scheme.optional) {
                     values.push(null);
                     continue;
-                }else if (d){
+                } else if (d) {
                     values.push(d.id);
                     continue;
                 }
@@ -594,7 +594,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 await this.cacheInvalidateAsync(entity.id);
                 try {
                     let item = await this.getAsync(entity.id);
-                    globalEventModel.getEmitter().emit(EVENT_ENTITY_UPDATED, {entity: item});
+                    globalEventModel.getEmitter().emit(EVENT_ENTITY_UPDATED, {entity: item, source: entity});
                     resolve(item);
                 } catch (err) {
                     reject(err)
@@ -607,6 +607,53 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         (async () => {
             try {
                 let item = await this.updateAsync(entity);
+                callback && callback(undefined, item);
+            } catch (err) {
+                callback && callback(err);
+            }
+        })();
+    }
+
+    async updateJsonFieldAsync(entity: Entity, fieldName: string): Promise<Entity> {
+        const scheme = this.findFieldSchema(fieldName);
+        if (!scheme) {
+            throw `Not found ${fieldName}`;
+        }
+        if (scheme.type !== 'json') {
+            throw `Not correct type ${fieldName}`;
+        }
+
+        let values = [
+            JSON.stringify(entity[fieldName]),
+            entity.id,
+        ];
+        const field = scheme.source ? scheme.source.id : scheme.field;
+        let name = "`" + field + "` = JSON_MERGE_PATCH(`" + field + "`, ?)";
+        const q = `
+            UPDATE ${this.tableEscaped}
+            SET ${name}
+            WHERE id = ?
+            LIMIT 1
+        `;
+        return new Promise((resolve, reject) => {
+            this.sql.query(q, values, async (err) => {
+                if (err) return reject(err);
+                await this.cacheInvalidateAsync(entity.id);
+                try {
+                    let item = await this.getAsync(entity.id);
+                    globalEventModel.getEmitter().emit(EVENT_ENTITY_UPDATED, {entity: item, source: entity});
+                    resolve(item);
+                } catch (err) {
+                    reject(err)
+                }
+            });
+        });
+    }
+
+    updateJsonField(entity: Entity, fieldName: string, callback: Function) {
+        (async () => {
+            try {
+                let item = await this.updateJsonFieldAsync(entity, fieldName);
                 callback && callback(undefined, item);
             } catch (err) {
                 callback && callback(err);
