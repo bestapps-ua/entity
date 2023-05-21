@@ -5,11 +5,13 @@ import ICacheModel from "../../interface/cache/ICacheModel";
 import ICacheEntity from "../../interface/cache/ICacheEntity";
 import CacheEntity from "../../entity/CacheEntity";
 import ICacheModelOptions from "../../interface/cache/ICacheModelOptions";
+import CacheBaseModel from "./CacheBaseModel";
 
 let storage = new Map();
 
-class CacheMemoryModel implements ICacheModel {
+class CacheMemoryModel extends CacheBaseModel {
     constructor(options: ICacheModelOptions) {
+        super(options);
     }
 
     async fetch(id: number|string, options: ICacheOptions): Promise<CacheEntity>{

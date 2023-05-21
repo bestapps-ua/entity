@@ -6,6 +6,9 @@ import Entity from "../../entity/Entity";
 import CacheEntity from "../../entity/CacheEntity";
 import IEntityModelOptions from "../../interface/entity/IEntityModelOptions";
 import {CACHE_TYPE_MEMORY, CacheFactoryModel} from "../cache/CacheFactoryModel";
+import ICacheFactoryModel from "../../interface/cache/ICacheFactoryModel";
+import configModel from "../ConfigModel";
+
 
 class EntityCacheModel extends EntityModel {
 
@@ -13,6 +16,8 @@ class EntityCacheModel extends EntityModel {
     private entityClassname: string;
 
     constructor(options: IEntityModelOptions) {
+        const cacheConfig = configModel.getCacheConfig();
+        //TODO: check models from config by table name (can and ttl)
         options = Object.assign({
             cache: {
                 can: {
@@ -20,9 +25,7 @@ class EntityCacheModel extends EntityModel {
                     fetch: false,
                 },
                 ttl: 0,
-                model: new CacheFactoryModel({
-                    type: CACHE_TYPE_MEMORY,
-                }),
+                model: new CacheFactoryModel(cacheConfig),
             },
         }, options);
         super(options);
@@ -40,13 +43,20 @@ class EntityCacheModel extends EntityModel {
     }
 
     private getCacheId(id: string | number): string {
-        return `${this.entityClassname}::${id}`;
+        return `${this.options.cache.model.getPrefix()}::${this.entityClassname}::${id}`;
     }
 
     cacheGet(id: string | number, callback) {
         (async () => {
             try {
+                let t1 = Date.now();
                 let data = await this.cacheGetAsync(id);
+                if(data) {
+                    data.system = {
+                        ttl: Date.now() - t1,
+                        isCache: true,
+                    };
+                }
                 callback && callback(undefined, data);
             } catch (err) {
                 callback && callback(err);
@@ -97,6 +107,26 @@ class EntityCacheModel extends EntityModel {
 
     async unserialize(data: string){
 
+    }
+
+    setCacheTtl(ttl: number){
+        this.options.cache.ttl = ttl;
+    }
+
+    private setCacheCan(key: string, can: boolean){
+        this.options.cache.can[key] = can;
+    }
+
+    setCacheCanStore(can: boolean){
+        this.setCacheCan('store', can);
+    }
+
+    setCacheCanFetch(can: boolean){
+        this.setCacheCan('fetch', can);
+    }
+
+    setCacheModel(model: ICacheFactoryModel){
+        this.options.cache.model = model;
     }
 }
 

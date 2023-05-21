@@ -4,12 +4,14 @@ class Entity {
     private _id: number;
     private _created: number;
     private _uid: string;
+    private _system: any;
 
     constructor(props) {
         this._props = props;
         this._id = props.id;
         this._uid = props.uid;
         this._created = props.created;
+        this._system = props.system;
     }
 
     /**
@@ -76,6 +78,13 @@ class Entity {
         return modified;
     }
 
+    get system(): any {
+        return this._system;
+    }
+
+    set system(value: any) {
+        this._system = value;
+    }
 }
 
 export default Entity;

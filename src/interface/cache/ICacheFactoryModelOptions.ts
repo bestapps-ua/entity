@@ -1,8 +1,8 @@
-import ICacheModelOptions from "./ICacheModelOptions";
 
 interface ICacheFactoryModelOptions {
-    type?: string;
-    options?: ICacheModelOptions;
+    type: string;
+    prefix: string;
+    redis?: any;
 }
 
 export default ICacheFactoryModelOptions;

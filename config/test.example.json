@@ -4,5 +4,17 @@
         "name": "",
         "user": "",
         "password": ""
+    },
+    "cache": {
+        "type": "memory",
+        "prefix": "yourAppMicroservicePrefix",
+        "redis": {
+            "connection": {
+                "port": "6379",
+                "host": "localhost",
+                "login": "",
+                "password": ""
+            }
+        }
     }
 }

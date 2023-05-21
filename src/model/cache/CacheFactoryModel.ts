@@ -7,16 +7,18 @@ import ICacheModel from "../../interface/cache/ICacheModel";
 import CacheEntity from "../../entity/CacheEntity";
 import CacheMemoryModel from "./CacheMemoryModel";
 import ICacheFactoryModel from "../../interface/cache/ICacheFactoryModel";
+import CacheRedisModel from "./CacheRedisModel";
 
 const CACHE_TYPE_MEMORY = 'memory';
+const CACHE_TYPE_REDIS = 'redis';
 
 class CacheFactoryModel implements ICacheFactoryModel {
     private model: ICacheModel;
     public options: ICacheFactoryModelOptions;
 
-    constructor(options: ICacheFactoryModelOptions = {}) {
+    constructor(options: ICacheFactoryModelOptions) {
         this.options = Object.assign({
-            type: CACHE_TYPE_MEMORY
+            type: CACHE_TYPE_MEMORY,
         }, options);
 
         this.loadModel();
@@ -26,8 +28,15 @@ class CacheFactoryModel implements ICacheFactoryModel {
         let model;
         switch(this.options.type){
             case CACHE_TYPE_MEMORY:
-                model = new CacheMemoryModel(this.options.options);
+                model = new CacheMemoryModel(this.options);
                 break;
+            case CACHE_TYPE_REDIS:
+                model = new CacheRedisModel({
+                    prefix: this.options.prefix,
+                    connection: this.options.redis.connection,
+                });
+                break;
+
         }
         this.setModel(model);
     }
@@ -77,9 +86,14 @@ class CacheFactoryModel implements ICacheFactoryModel {
     async invalidate(id: number | string) {
         return await this.model.invalidate(id);
     }
+
+    getPrefix() {
+        return this.options.prefix;
+    }
 }
 
 export {
     CacheFactoryModel,
     CACHE_TYPE_MEMORY,
+    CACHE_TYPE_REDIS,
 };

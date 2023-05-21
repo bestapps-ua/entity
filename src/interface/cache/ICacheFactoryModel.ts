@@ -9,6 +9,7 @@ interface ICacheFactoryModel {
     set(id: number | string, data: Entity, ttl: number, options?: ICacheOptions): Promise<CacheEntity>;
     invalidate(id: number | string);
     invalidateAll();
+    getPrefix();
 }
 
 export default ICacheFactoryModel;

@@ -12,7 +12,7 @@ import IEntityResponse from "../../interface/entity/IEntityResponse";
 import IEntitySQLMakeResponse from "../../interface/entity/sql/make/IEntitySQLMakeResponse";
 import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntitySQLMakeListResponse";
 import globalEventModel from "../event/GlobalEventModel";
-import {EVENT_ENTITY_CREATED, EVENT_ENTITY_DATA_UPDATED, EVENT_ENTITY_UPDATED} from "../event/Events";
+import {EVENT_ENTITY_CREATED, EVENT_ENTITY_UPDATED} from "../event/Events";
 
 let uuid4 = require('uuid/v4');
 
@@ -116,9 +116,14 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         if (!data) {
             return callback && callback({data, errors: [{error: `no data provided in ${this.constructor.name}.make`}]});
         }
+        let t1 = Date.now();
         let itemData = {
             id: data.id,
             uid: data.uid,
+            system: {
+                isCache: false,
+                ttl: 0,
+            },
             created: data.created,
         };
         let p = [];
@@ -175,8 +180,10 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             }));
         }
         Promise.all(p).then(() => {
+            itemData.system.ttl = Date.now() - t1;
             callback && callback(errors.length > 0 ? {data, errors} : undefined, itemData);
         }).catch((err) => {
+            itemData.system.ttl = Date.now() - t1;
             callback && callback({data, errors: [{error: err}]}, itemData);
         });
     }
@@ -386,8 +393,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         let q = `
             DELETE
             FROM ${this.tableEscaped}
-            WHERE id = ?
-            LIMIT 1
+            WHERE id = ? LIMIT 1
         `;
         this.sql.query(q, item.id, async (err) => {
             await this.cacheInvalidateAsync(item.id);
@@ -485,7 +491,10 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                         if (!createdEntity) {
                             throw 'not found'
                         }
-                        globalEventModel.getEmitter().emit(EVENT_ENTITY_CREATED, {entity: createdEntity, source: entity});
+                        globalEventModel.getEmitter().emit(EVENT_ENTITY_CREATED, {
+                            entity: createdEntity,
+                            source: entity
+                        });
                         resolve(createdEntity);
                     } catch (err) {
                         console.log('[err create get]', err, id, entity);
@@ -585,8 +594,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         const q = `
             UPDATE ${this.tableEscaped}
             SET ${names.join(', ')}
-            WHERE id = ?
-            LIMIT 1
+            WHERE id = ? LIMIT 1
         `;
         return new Promise((resolve, reject) => {
             this.sql.query(q, values, async (err) => {
@@ -632,8 +640,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         const q = `
             UPDATE ${this.tableEscaped}
             SET ${name}
-            WHERE id = ?
-            LIMIT 1
+            WHERE id = ? LIMIT 1
         `;
         return new Promise((resolve, reject) => {
             this.sql.query(q, values, async (err) => {
