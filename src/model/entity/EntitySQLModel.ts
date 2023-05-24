@@ -13,6 +13,7 @@ import IEntitySQLMakeResponse from "../../interface/entity/sql/make/IEntitySQLMa
 import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntitySQLMakeListResponse";
 import globalEventModel from "../event/GlobalEventModel";
 import {EVENT_ENTITY_CREATED, EVENT_ENTITY_UPDATED} from "../event/Events";
+import RegistryModel from "../RegistryModel";
 
 let uuid4 = require('uuid/v4');
 
@@ -25,7 +26,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     constructor(options: IEntitySQLModelOptions) {
         super(options);
         this.table = options.table;
-        this.sql = options.sql;
+        this.sql = RegistryModel.get('sql');
         this.options.schemas = this.options.schemas || [];
         this._fillDefault();
     }
@@ -62,7 +63,12 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     }
 
     get sql(): any {
-        if (!this._sql) throw 'Please init options.sql';
+        if (!this._sql) {
+            this._sql = RegistryModel.get('sql');
+            if(!this._sql) {
+                throw 'Please set in Registry - sql';
+            }
+        }
         return this._sql;
     }
 
@@ -423,9 +429,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
 
     protected getEntityClassesInvolved() {
-        let classes = [
-            this.entity,
-        ];
+        let classes = super.getEntityClassesInvolved();
+        classes.push(this.entity);
         let models = {};
         this.getEntityClassesNext(classes, models);
         return classes;

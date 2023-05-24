@@ -1,21 +1,37 @@
 import sql from "../model/SQLModel";
+import RegistryModel from "../../src/model/RegistryModel";
 
-class TestHelper {
+export class TestHelper {
     constructor() {
-        beforeAll(done => {
-            done();
-        });
-
-        afterAll(done => {
-            sql.connectionEnd(() => {
-                done();
-            });
-        });
+        this.beforeAll();
+        this.afterAll();
     }
 
     prepare() {
+    }
 
+    beforeAll(callback = undefined){
+        beforeAll(done => {
+            if(callback) {
+                callback(done)
+            }else{
+                done();
+            }
+        });
+    }
+
+    afterAll(callback = undefined){
+        afterAll(done => {
+            sql.connectionEnd(() => {
+                if(callback) {
+                    callback(done)
+                }else{
+                    done();
+                }
+            });
+        });
     }
 }
 
-export default new TestHelper();
+let testHelper = new TestHelper();
+export {testHelper};

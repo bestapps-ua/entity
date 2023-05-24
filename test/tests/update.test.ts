@@ -1,10 +1,10 @@
 import mainModel from "../model/MainModel";
 import Main from "../entity/Main";
-import sql from "../model/SQLModel";
-import testHelper from "../helper/TestHelper";
 import mainEntityHelper from "../helper/MainEntityHelper";
 import globalEventModel from "../../src/model/event/GlobalEventModel";
 import {EVENT_ENTITY_UPDATED} from "../../src/model/event/Events";
+import {testHelper} from "../helper/TestHelper";
+
 
 let uuid4 = require('uuid/v4');
 

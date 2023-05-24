@@ -1,10 +1,8 @@
-import sql from './SQLModel';
 import EntitySQLModel from "../../src/model/entity/EntitySQLModel";
 import IEntitySQLModelOptions from "../../src/interface/entity/sql/IEntitySQLModelOptions";
 import Main from "../entity/Main";
 
 let options: IEntitySQLModelOptions = {
-    sql,
     table: 'main',
     entity: Main,
     schemas: [

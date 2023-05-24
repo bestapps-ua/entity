@@ -1,5 +1,5 @@
 interface ICacheOptions {
-    classes?: [string];
+    classes?: any[];
 }
 
 export default ICacheOptions;

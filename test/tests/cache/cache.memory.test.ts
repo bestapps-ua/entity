@@ -1,4 +1,4 @@
-import testHelper from "../../helper/TestHelper";
+import {testHelper} from "../../helper/TestHelper";
 import mainEntityHelper from "../../helper/MainEntityHelper";
 import mainModel from "../../model/MainModel";
 import Main from "../../entity/Main";

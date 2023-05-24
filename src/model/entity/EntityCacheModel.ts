@@ -12,7 +12,7 @@ import configModel from "../ConfigModel";
 
 class EntityCacheModel extends EntityModel {
 
-    protected classesInvolved: [Entity];
+    protected classesInvolved: any[];
     private entityClassname: string;
 
     constructor(options: IEntityModelOptions) {
@@ -67,7 +67,7 @@ class EntityCacheModel extends EntityModel {
     async cacheGetAsync(id: string | number): Promise<Entity> {
         if (!this.canFetch()) return;
         let cacheId = this.getCacheId(id);
-        return await this.options.cache.model.get(cacheId);
+        return await this.options.cache.model.get(cacheId, {classes: this.classesInvolved});
     }
 
     async cacheSetAsync(id: string | number, data: Entity): Promise<CacheEntity> {
@@ -98,7 +98,7 @@ class EntityCacheModel extends EntityModel {
     }
 
     getEntityClassesInvolved(){
-        return [];
+        return [Entity, CacheEntity];
     }
 
     async serialize(data: Entity){

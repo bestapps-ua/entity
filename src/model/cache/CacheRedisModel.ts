@@ -1,14 +1,13 @@
 'use strict';
 
 import ICacheOptions from "../../interface/cache/ICacheOptions";
-import ICacheModel from "../../interface/cache/ICacheModel";
 import ICacheEntity from "../../interface/cache/ICacheEntity";
 import CacheEntity from "../../entity/CacheEntity";
-import ICacheModelOptions from "../../interface/cache/ICacheModelOptions";
 
 import {createClient} from 'redis';
 import ICacheRedisModelOptions from "../../interface/cache/ICacheRedisModelOptions";
 import CacheBaseModel from "./CacheBaseModel";
+import RegistryModel from "../RegistryModel";
 
 
 class CacheRedisModel extends CacheBaseModel {
@@ -16,17 +15,24 @@ class CacheRedisModel extends CacheBaseModel {
 
     constructor(options: ICacheRedisModelOptions) {
         super(options);
-        let url = `redis://`;
-        if (options.connection.username) {
-            url += `${options.connection.username}:${options.connection.password}@`;
+        this.client = RegistryModel.get('redisClient');
+        if (!this.client) {
+            this.initRedisClient();
         }
-        if (options.connection.host) {
-            url += `${options.connection.host}`;
+    }
+
+    initRedisClient() {
+        let url = `redis://`;
+        if (this.options.connection.username) {
+            url += `${this.options.connection.username}:${this.options.connection.password}@`;
+        }
+        if (this.options.connection.host) {
+            url += `${this.options.connection.host}`;
         } else {
             url += `localhost`;
         }
-        if (options.connection.port) {
-            url += `:${options.connection.port}`;
+        if (this.options.connection.port) {
+            url += `:${this.options.connection.port}`;
         } else {
             url += `:6379`;
         }
@@ -34,12 +40,17 @@ class CacheRedisModel extends CacheBaseModel {
             url,
         });
         this.client.connect();
+        RegistryModel.set('redisClient', this.client);
     }
 
     async fetch(id: number | string, options: ICacheOptions): Promise<CacheEntity> {
         let data = await this.client.get(id);
-        const decoded = this.decode(data, options);
-        return decoded;
+        try {
+            const decoded = this.decode(data, options);
+            return decoded;
+        }catch(e){
+            console.log('error redis decode', e, data);
+        }
     }
 
     /**
@@ -73,7 +84,7 @@ class CacheRedisModel extends CacheBaseModel {
     }
 
     async disconnect() {
-        await this.client.disconnect();
+        this.client.disconnect();
     }
 }
 

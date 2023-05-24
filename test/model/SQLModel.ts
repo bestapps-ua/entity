@@ -1,5 +1,7 @@
 'use strict';
 
+import RegistryModel from "../../src/model/RegistryModel";
+
 let config = require('config');
 
 /**
@@ -16,6 +18,8 @@ let sql = new Wap3LibSQL({
         database: config.db.name
     }
 });
+
+RegistryModel.set('sql', sql);
 
 (async() => {
     await new Promise((resolve) => {
