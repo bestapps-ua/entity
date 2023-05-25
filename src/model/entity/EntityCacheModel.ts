@@ -6,7 +6,7 @@ import IEntityModelOptions from "../../interface/entity/IEntityModelOptions";
 import {CacheFactoryModel} from "../cache/CacheFactoryModel";
 import ICacheFactoryModel from "../../interface/cache/ICacheFactoryModel";
 import RegistryModel from "../RegistryModel";
-
+import {IEntityCacheOptions} from "../../interface/entity/IEntityCacheOptions";
 
 class EntityCacheModel extends EntityModel {
 
@@ -23,23 +23,22 @@ class EntityCacheModel extends EntityModel {
     get cache() {
         if (this.options.cache) return this.options.cache;
         const configModel = RegistryModel.get('configModel');
-        if(!configModel) return {
-            can: {
-                store: false,
-                fetch: false,
-            }
-        };
-        const cacheConfig = configModel.getCacheConfig();
-        //TODO: check models from config by table name (can and ttl)
-        let cache = {
+        let defaultModel = {
             can: {
                 store: false,
                 fetch: false,
             },
             ttl: 0,
-            model: new CacheFactoryModel(cacheConfig),
+            model: undefined,
         };
-        this.options.cache = cache;
+        if(!configModel) return defaultModel;
+        const cacheConfig = configModel.getCacheConfig();
+        let model = this.entityClassname;
+        let modelConfig = this.findCacheModelConfig(model, cacheConfig.models);
+        modelConfig = modelConfig || defaultModel;
+        modelConfig.model = new CacheFactoryModel(cacheConfig);
+
+        this.options.cache = modelConfig;
         return this.options.cache;
     }
 
@@ -130,6 +129,14 @@ class EntityCacheModel extends EntityModel {
 
     setCacheModel(model: ICacheFactoryModel) {
         this.cache.model = model;
+    }
+
+    private findCacheModelConfig(name: string, models: any[]): IEntityCacheOptions {
+        for (const model of models) {
+            if(model.name === name) {
+                return JSON.parse(JSON.stringify(model));
+            }
+        }
     }
 }
 

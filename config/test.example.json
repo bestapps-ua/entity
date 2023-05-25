@@ -8,6 +8,16 @@
     "cache": {
         "type": "memory",
         "prefix": "yourAppMicroservicePrefix",
+        "models": [
+            {
+                "name": "some",
+                "can": {
+                    "store": false,
+                    "fetch": false
+                },
+                "ttl": 0
+            }
+        ],
         "redis": {
             "connection": {
                 "port": "6379",

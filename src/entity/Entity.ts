@@ -39,7 +39,9 @@ class Entity {
     }
 
     getClassName() {
-        return this.constructor.name.toLowerCase();
+        let name = this.constructor.name;
+        name = name.charAt(0).toLowerCase() + name.slice(1);
+        return name;
     }
 
     get allData() {
