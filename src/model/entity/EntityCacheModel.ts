@@ -1,13 +1,11 @@
 import EntityModel from "./EntityModel";
-import IEntityItemsWhere from "../../interface/entity/items/IEntityItemsWhere";
-import IEntityItemsFilter from "../../interface/entity/items/IEntityItemsFilter";
-import IEntityItemsSort from "../../interface/entity/items/IEntityItemsSort";
+
 import Entity from "../../entity/Entity";
 import CacheEntity from "../../entity/CacheEntity";
 import IEntityModelOptions from "../../interface/entity/IEntityModelOptions";
-import {CACHE_TYPE_MEMORY, CacheFactoryModel} from "../cache/CacheFactoryModel";
+import {CacheFactoryModel} from "../cache/CacheFactoryModel";
 import ICacheFactoryModel from "../../interface/cache/ICacheFactoryModel";
-import configModel from "../ConfigModel";
+import RegistryModel from "../RegistryModel";
 
 
 class EntityCacheModel extends EntityModel {
@@ -16,34 +14,46 @@ class EntityCacheModel extends EntityModel {
     private entityClassname: string;
 
     constructor(options: IEntityModelOptions) {
-        const cacheConfig = configModel.getCacheConfig();
-        //TODO: check models from config by table name (can and ttl)
-        options = Object.assign({
-            cache: {
-                can: {
-                    store: false,
-                    fetch: false,
-                },
-                ttl: 0,
-                model: new CacheFactoryModel(cacheConfig),
-            },
-        }, options);
         super(options);
         this.classesInvolved = this.getEntityClassesInvolved();
         // @ts-ignore
         this.entityClassname = (new this._entity({})).getClassName();
     }
 
+    get cache() {
+        if (this.options.cache) return this.options.cache;
+        const configModel = RegistryModel.get('configModel');
+        if(!configModel) return {
+            can: {
+                store: false,
+                fetch: false,
+            }
+        };
+        const cacheConfig = configModel.getCacheConfig();
+        //TODO: check models from config by table name (can and ttl)
+        let cache = {
+            can: {
+                store: false,
+                fetch: false,
+            },
+            ttl: 0,
+            model: new CacheFactoryModel(cacheConfig),
+        };
+        this.options.cache = cache;
+        return this.options.cache;
+    }
+
     protected canStore(): boolean {
-        return this.options.cache.can.store;
+        return this.cache.can.store;
     }
 
     protected canFetch(): boolean {
-        return this.options.cache.can.fetch;
+        return this.cache.can.fetch;
     }
 
     private getCacheId(id: string | number): string {
-        return `${this.options.cache.model.getPrefix()}::${this.entityClassname}::${id}`;
+        if(!this.cache.model) return ;
+        return `${this.cache.model.getPrefix()}::${this.entityClassname}::${id}`;
     }
 
     cacheGet(id: string | number, callback) {
@@ -51,7 +61,7 @@ class EntityCacheModel extends EntityModel {
             try {
                 let t1 = Date.now();
                 let data = await this.cacheGetAsync(id);
-                if(data) {
+                if (data) {
                     data.system = {
                         ttl: Date.now() - t1,
                         isCache: true,
@@ -67,28 +77,29 @@ class EntityCacheModel extends EntityModel {
     async cacheGetAsync(id: string | number): Promise<Entity> {
         if (!this.canFetch()) return;
         let cacheId = this.getCacheId(id);
-        return await this.options.cache.model.get(cacheId, {classes: this.classesInvolved});
+        return await this.cache.model.get(cacheId, {classes: this.classesInvolved});
     }
 
     async cacheSetAsync(id: string | number, data: Entity): Promise<CacheEntity> {
         if (!this.canStore()) return;
         let cacheId = this.getCacheId(id);
-        return await this.options.cache.model.set(cacheId, data, this.options.cache.ttl);
+        return await this.cache.model.set(cacheId, data, this.cache.ttl);
     }
 
     async cacheInvalidateAsync(id: string | number) {
+        if(!this.cache.model) return ;
         let cacheId = this.getCacheId(id);
-        return await this.options.cache.model.invalidate(cacheId);
+        return await this.cache.model.invalidate(cacheId);
     }
 
-    async invalidateAll(){
-        return await this.options.cache.model.invalidateAll();
+    async invalidateAll() {
+        return await this.cache.model.invalidateAll();
     }
 
     async getCachedMaybe(id, callback: Function = undefined) {
         return new Promise(async (resolve, reject) => {
             let key = this.getCacheId(id);
-            let cache = await this.options.cache.model.get(key);
+            let cache = await this.cache.model.get(key);
             if (cache) {
                 resolve(cache);
                 return callback && callback(undefined, cache);
@@ -97,36 +108,28 @@ class EntityCacheModel extends EntityModel {
         });
     }
 
-    getEntityClassesInvolved(){
+    getEntityClassesInvolved() {
         return [Entity, CacheEntity];
     }
 
-    async serialize(data: Entity){
-
+    setCacheTtl(ttl: number) {
+        this.cache.ttl = ttl;
     }
 
-    async unserialize(data: string){
-
+    private setCacheCan(key: string, can: boolean) {
+        this.cache.can[key] = can;
     }
 
-    setCacheTtl(ttl: number){
-        this.options.cache.ttl = ttl;
-    }
-
-    private setCacheCan(key: string, can: boolean){
-        this.options.cache.can[key] = can;
-    }
-
-    setCacheCanStore(can: boolean){
+    setCacheCanStore(can: boolean) {
         this.setCacheCan('store', can);
     }
 
-    setCacheCanFetch(can: boolean){
+    setCacheCanFetch(can: boolean) {
         this.setCacheCan('fetch', can);
     }
 
-    setCacheModel(model: ICacheFactoryModel){
-        this.options.cache.model = model;
+    setCacheModel(model: ICacheFactoryModel) {
+        this.cache.model = model;
     }
 }
 

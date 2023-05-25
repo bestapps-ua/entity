@@ -11,14 +11,18 @@ import RegistryModel from "../RegistryModel";
 
 
 class CacheRedisModel extends CacheBaseModel {
-    private client;
+    private _client;
 
     constructor(options: ICacheRedisModelOptions) {
         super(options);
-        this.client = RegistryModel.get('redisClient');
-        if (!this.client) {
+    }
+
+    get client() {
+        this._client = RegistryModel.get('redisClient');
+        if (!this._client) {
             this.initRedisClient();
         }
+        return this._client;
     }
 
     initRedisClient() {
@@ -36,11 +40,11 @@ class CacheRedisModel extends CacheBaseModel {
         } else {
             url += `:6379`;
         }
-        this.client = createClient({
+        this._client = createClient({
             url,
         });
-        this.client.connect();
-        RegistryModel.set('redisClient', this.client);
+        this._client.connect();
+        RegistryModel.set('redisClient', this._client);
     }
 
     async fetch(id: number | string, options: ICacheOptions): Promise<CacheEntity> {

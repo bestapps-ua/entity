@@ -26,7 +26,6 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     constructor(options: IEntitySQLModelOptions) {
         super(options);
         this.table = options.table;
-        this.sql = RegistryModel.get('sql');
         this.options.schemas = this.options.schemas || [];
         this._fillDefault();
     }
@@ -426,7 +425,6 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         });
 
     }
-
 
     protected getEntityClassesInvolved() {
         let classes = super.getEntityClassesInvolved();

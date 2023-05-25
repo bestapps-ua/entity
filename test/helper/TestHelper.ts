@@ -11,6 +11,7 @@ export class TestHelper {
     }
 
     beforeAll(callback = undefined){
+
         beforeAll(done => {
             if(callback) {
                 callback(done)
