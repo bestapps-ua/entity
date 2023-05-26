@@ -1,5 +1,5 @@
 import sql from "../model/SQLModel";
-import RegistryModel from "../../src/model/RegistryModel";
+
 
 export class TestHelper {
     constructor() {
