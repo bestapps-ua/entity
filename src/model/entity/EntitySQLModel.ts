@@ -410,7 +410,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         return new Promise((resolve, reject) => {
             this.remove(item, (err) => {
                 if (err) return reject(err);
-                resolve();
+                resolve(undefined);
             });
         });
     }
@@ -420,7 +420,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             let q = `TRUNCATE ${this.tableEscaped}`;
             this.sql.query(q, undefined, async () => {
                 await this.invalidateAll();
-                resolve();
+                resolve(undefined);
             });
         });
 
@@ -428,6 +428,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
     getEntityClassesInvolved() {
         let classes = super.getEntityClassesInvolved();
+        //@ts-ignore
         classes.push(this.entity);
         let models = {};
         this.getEntityClassesNext(classes, models);

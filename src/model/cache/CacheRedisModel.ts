@@ -77,7 +77,7 @@ class CacheRedisModel extends CacheBaseModel {
             const key = keys[i];
             p.push(new Promise(async (res, rej) => {
                 await this.invalidate(key);
-                res();
+                res(undefined);
             }));
         }
         await Promise.all(p);

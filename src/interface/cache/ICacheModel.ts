@@ -7,6 +7,8 @@ interface ICacheModel {
     invalidateAll?();
     invalidate?(id: number|string);
     disconnect?();
+    encode(data: ICacheEntity, options: ICacheOptions);
+    decode(serialized: string, options: ICacheOptions);
 }
 
 export default ICacheModel;

@@ -24,22 +24,4 @@ export default {
             CacheMemoryModel,
         }
     },
-    interface: {
-        cache: {
-            ICacheEntity,
-            ICacheFactoryModel,
-            ICacheFactoryModelOptions,
-            ICacheModel,
-            ICacheModelOptions,
-            ICacheOptions,
-        },
-        entity: {
-            sql: {
-
-            },
-            items: {
-
-            },
-        }
-    },
 }
