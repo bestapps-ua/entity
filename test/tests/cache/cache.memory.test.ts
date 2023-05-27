@@ -17,9 +17,11 @@ describe('Cache', () => {
         expect(mainEntity.system.isCache).toBe(false);
         mainEntity = await mainModel.getAsync(mainEntity.id) as Main;
         expect(mainEntity.system.isCache).toBe(true);
+        expect(mainEntity.system.type === CACHE_TYPE_MEMORY).toBe(true);
         setTimeout(async () => {
             mainEntity = await mainModel.getAsync(mainEntity.id) as Main;
             expect(mainEntity.system.isCache).toBe(false);
+
             done();
         }, 1001);
     });

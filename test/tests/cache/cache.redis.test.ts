@@ -1,7 +1,7 @@
 import {testRedisHelper} from "../../helper/TestRedisHelper";
 import mainEntityHelper from "../../helper/MainEntityHelper";
 import mainModel from "../../model/MainModel";
-import {CACHE_TYPE_REDIS} from "../../../src/model/cache/CacheFactoryModel";
+import {CACHE_TYPE_MEMORY, CACHE_TYPE_REDIS} from "../../../src/model/cache/CacheFactoryModel";
 import Main from "../../entity/Main";
 import cacheHelper from "../../helper/CacheHelper";
 
@@ -18,6 +18,7 @@ describe('Cache', () => {
         expect(mainEntity.system.isCache).toBe(false);
         mainEntity = await mainModel.getAsync(mainEntity.id) as Main;
         expect(mainEntity.system.isCache).toBe(true);
+        expect(mainEntity.system.type === CACHE_TYPE_REDIS).toBe(true);
         setTimeout(async () => {
             mainEntity = await mainModel.getAsync(mainEntity.id) as Main;
             expect(mainEntity.system.isCache).toBe(false);

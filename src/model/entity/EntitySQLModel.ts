@@ -337,7 +337,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         params.select = params.select || `${this.tableEscaped}.*`;
         let query = this.processSelect(params.select) + ' ';
         query += `FROM ${this.tableEscaped} `;
-        let {q, values} = this.processFilter(params.filters);
+        let {q, values} = this.processFilters(params);
         query += q;
 
         query += this.processGroup(params.group);
@@ -356,7 +356,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         });
     }
 
-    getItemsAsync(params: IEntityItemsParams, options): Promise<Entity[] | any[]> {
+    getItemsAsync(params: IEntityItemsParams, options: any = undefined): Promise<Entity[] | any[]> {
         return new Promise((resolve, reject) => {
             this.getItems(params, (err, items) => {
                 resolve(items);
@@ -373,7 +373,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             SELECT COUNT(*) cnt
             FROM ${this.tableEscaped}
         `;
-        let {q, values} = this.processFilter(params.filters);
+        let {q, values} = this.processFilters(params);
         query += q;
 
         query += this.processGroup(params.group);

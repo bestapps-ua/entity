@@ -90,6 +90,10 @@ class CacheFactoryModel implements ICacheFactoryModel {
     getPrefix() {
         return this.options.prefix;
     }
+
+    getType(){
+        return this.options.type;
+    }
 }
 
 export {

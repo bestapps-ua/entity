@@ -1,14 +1,16 @@
 import IEntityItemsFilter from "./IEntityItemsFilter";
 import IEntityItemsSort from "./IEntityItemsSort";
+import IEntityItemsWhere from "./IEntityItemsWhere";
 
 interface IEntityItemsParams {
-    select: string|string[];
+    select?: string|string[];
     filters?: IEntityItemsFilter;
     page?: number;
     limit?: number;
     sort?: IEntityItemsSort | IEntityItemsSort[];
     group?: string | string[];
-    native: boolean;
+    native?: boolean;
+    where?: IEntityItemsWhere|IEntityItemsWhere[]
 }
 
 export default IEntityItemsParams;

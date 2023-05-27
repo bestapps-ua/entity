@@ -10,6 +10,7 @@ interface ICacheFactoryModel {
     invalidate(id: number | string);
     invalidateAll();
     getPrefix();
+    getType();
 }
 
 export default ICacheFactoryModel;

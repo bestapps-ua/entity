@@ -3,6 +3,7 @@ import IEntityItemsWhere from "../../interface/entity/items/IEntityItemsWhere";
 import IEntityItemsFilter from "../../interface/entity/items/IEntityItemsFilter";
 import IEntityItemsSort from "../../interface/entity/items/IEntityItemsSort";
 import EntityCacheModel from "./EntityCacheModel";
+import IEntityItemsParams from "../../interface/entity/items/IEntityItemsParams";
 
 class EntityBaseSQLModel extends EntityCacheModel {
     protected escapeField(field: string) {
@@ -25,11 +26,13 @@ class EntityBaseSQLModel extends EntityCacheModel {
         let values = [];
         if (Array.isArray(where)) {
             for (let i = 0; i < where.length; i++) {
-                names.push(`${this.escapeField(where[i].key)} = ?`);
+                const equal = where[i].equal ? where[i].equal : '=';
+                names.push(`${this.escapeField(where[i].key)} ${equal} ?`);
                 values.push(where[i].value);
             }
         } else {
-            names.push(`${this.escapeField(where.key)} = ?`);
+            const equal = where.equal ? where.equal : '=';
+            names.push(`${this.escapeField(where.key)} ${equal} ?`);
             values.push(where.value);
         }
         return {
@@ -38,22 +41,25 @@ class EntityBaseSQLModel extends EntityCacheModel {
         };
     }
 
-    protected processFilter(filter: IEntityItemsFilter) {
+    protected processFilters(params: IEntityItemsParams) {
         let q = '';
         let values = [];
-        if (filter.join) {
-            if (Array.isArray(filter.join)) {
-                for (let i = 0; i < filter.join.length; i++) {
-                    q += 'JOIN ' + this.escapeField(filter.join[i].table) + ' ';
+        let filters = params.filters;
+        if (filters && filters.join) {
+            if (Array.isArray(filters.join)) {
+                for (let i = 0; i < filters.join.length; i++) {
+                    q += 'JOIN ' + this.escapeField(filters.join[i].table) + ' ';
                 }
             } else {
-                q += 'JOIN ' + this.escapeField(filter.join.table) + ' ';
+                q += 'JOIN ' + this.escapeField(filters.join.table) + ' ';
             }
         }
 
-        if (filter.where) {
+        let where = (filters && filters.where) || params.where;
+
+        if (where) {
             q += 'WHERE ';
-            let res = this.processWhere(filter.where);
+            let res = this.processWhere(where);
             values.push(res.values);
             q += `${res.names.join(' AND ')} `;
         }

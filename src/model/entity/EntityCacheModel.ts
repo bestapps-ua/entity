@@ -64,6 +64,7 @@ class EntityCacheModel extends EntityModel {
                     data.system = {
                         ttl: Date.now() - t1,
                         isCache: true,
+                        type: this.cache.model.getType(),
                     };
                 }
                 callback && callback(undefined, data);
