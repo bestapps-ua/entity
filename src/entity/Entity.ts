@@ -1,10 +1,10 @@
 class Entity {
 
     protected _props: any;
-    private _id: number;
-    private _created: number;
-    private _uid: string;
-    private _system: any;
+    protected _id: number;
+    protected _created: number;
+    protected _uid: string;
+    protected _system: any;
 
     constructor(props) {
         this._props = props;

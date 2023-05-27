@@ -21,15 +21,18 @@ describe('Create', () => {
         await mainEntityHelper.checkAllData(entity.props, data, {withParent: true});
     });
 
-    it('Event', async (done) => {
+    it('Event', async () => {
         testHelper.prepare();
         let can = true;
-        globalEventModel.getEmitter().on(EVENT_ENTITY_CREATED, async (data) => {
-            if(!can) return ;
-            can = false;
-            await mainEntityHelper.checkAllData(data.entity.props, data.entity);
-            done();
+        return new Promise(async (resolve) => {
+            globalEventModel.getEmitter().on(EVENT_ENTITY_CREATED, async (data) => {
+                if(!can) return ;
+                can = false;
+                await mainEntityHelper.checkAllData(data.entity.props, data.entity);
+                resolve();
+            });
+            await mainEntityHelper.create();
         });
-        await mainEntityHelper.create();
     });
 });
+

@@ -426,7 +426,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
     }
 
-    protected getEntityClassesInvolved() {
+    getEntityClassesInvolved() {
         let classes = super.getEntityClassesInvolved();
         classes.push(this.entity);
         let models = {};
@@ -434,7 +434,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         return classes;
     }
 
-    protected getEntityClassesNext(classes, models) {
+    getEntityClassesNext(classes, models) {
         let schemas = this.schemas;
         for (const schema of schemas) {
             if (!schema.source) continue;

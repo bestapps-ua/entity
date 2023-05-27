@@ -1,9 +1,8 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    globals: {
-        'ts-jest': {
-            diagnostics: false
-        }
+    testRunner: 'jest-jasmine2',
+    transform: {
+        '^.+\\.(ts|tsx)?$': ['ts-jest', {diagnostics: false}],
     }
 };

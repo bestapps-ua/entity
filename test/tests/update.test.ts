@@ -37,18 +37,21 @@ describe('Update', () => {
         await mainEntityHelper.checkAllData(entity, entityUpdated);
     });
 
-    it('Event', async (done) => {
-        testHelper.prepare();
-        let can = true;
-        globalEventModel.getEmitter().on(EVENT_ENTITY_UPDATED, async (data) => {
-            if(!can) return ;
-            can = false;
-            await mainEntityHelper.checkAllData(data.entity.props, entity);
-            done();
+    it('Event', () => {
+        return new Promise(async (resolve) => {
+
+            testHelper.prepare();
+            let can = true;
+            globalEventModel.getEmitter().on(EVENT_ENTITY_UPDATED, async (data) => {
+                if (!can) return;
+                can = false;
+                await mainEntityHelper.checkAllData(data.entity.props, entity);
+                resolve();
+            });
+            let entity = await mainEntityHelper.create();
+            entity.name = `changed${uuid4()}`;
+            await mainModel.updateAsync(entity);
         });
-        let entity = await mainEntityHelper.create();
-        entity.name = `changed${uuid4()}`;
-        await mainModel.updateAsync(entity);
     });
 
     describe('JSON field', () => {
@@ -80,3 +83,4 @@ describe('Update', () => {
         });
     });
 });
+
