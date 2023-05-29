@@ -1,5 +1,16 @@
 {
-    "main": "src/index.js",
+    "name": "@bestapps/microservice-entity",
+    "homepage": "https://github.com/bestapps-ua/microservice.entity",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bestapps-ua/microservice.entity.git"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/bestapps-ua/microservice.entity/issues"
+    },
+    "main": "dist/index.js",
+    "version": "1.0.0",
     "dependencies": {
         "@bestapps/raks-sql": "1.0.15",
         "@types/jest": "^25.2.3",
@@ -23,5 +34,11 @@
         "test": "NODE_ENV= jest",
         "unit": "npm run test --runInBand --detectOpenHandles --forceExit",
         "unitScript": "npm run test --runInBand --detectOpenHandles --forceExit -- "
-    }
+    },
+    "keywords": [
+        "sql",
+        "orm",
+        "entity",
+        "redis"
+    ]
 }

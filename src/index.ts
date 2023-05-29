@@ -2,14 +2,14 @@ import EntitySQLModel from "./model/entity/EntitySQLModel";
 import EntityModel from "./model/entity/EntityModel";
 import Entity from "./entity/Entity";
 import CacheEntity from "./entity/CacheEntity";
-import ICacheEntity from "./interface/cache/ICacheEntity";
-import ICacheFactoryModel from "./interface/cache/ICacheFactoryModel";
-import ICacheFactoryModelOptions from "./interface/cache/ICacheFactoryModelOptions";
-import ICacheModel from "./interface/cache/ICacheModel";
-import ICacheModelOptions from "./interface/cache/ICacheModelOptions";
-import ICacheOptions from "./interface/cache/ICacheOptions";
 import {CacheFactoryModel} from "./model/cache/CacheFactoryModel";
 import CacheMemoryModel from "./model/cache/CacheMemoryModel";
+import EntityCacheModel from "./model/entity/EntityCacheModel";
+import CacheRedisModel from "./model/cache/CacheRedisModel";
+import * as Events from "events";
+import globalEventModel from "./model/event/GlobalEventModel";
+import configModel from "./model/ConfigModel";
+import RegistryModel from "./model/RegistryModel";
 
 export default {
     entity: {
@@ -17,11 +17,21 @@ export default {
         CacheEntity,
     },
     model: {
-        EntityModel,
-        EntitySQLModel,
+        configModel,
+        RegistryModel,
+        entity: {
+            EntityModel,
+            EntityCacheModel,
+            EntitySQLModel,
+        },
         cache: {
             CacheFactoryModel,
             CacheMemoryModel,
-        }
+            CacheRedisModel,
+        },
+        event: {
+            Events,
+            globalEventModel,
+        },
     },
 }

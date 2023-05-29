@@ -16,8 +16,8 @@ Copy paste from test/model/SQLModel.ts
 ### ConfigModel
 
 ``` 
-let configModel = require('@bestapps/microservice-entity').configModel;
-let RegistryModel = require('@bestapps/microservice-entity').RegistryModel;
+let configModel = require('@bestapps/microservice-entity').model.configModel;
+let RegistryModel = require('@bestapps/microservice-entity').model.RegistryModel;
 
 
 configModel.setCacheConfig(config.cache);
@@ -47,12 +47,11 @@ Examples is in test/model
 
 ### Basic scheme
 ```
-let EntitySQLModel = require('@bestapps/microservice-entity').EntitySQLModel;
-let IEntitySQLModelOptions = require('@bestapps/microservice-entity').IEntitySQLModelOptions";
+let EntitySQLModel = require('@bestapps/microservice-entity').model.entity.EntitySQLModel;
 
 import Main from "../entity/Main";
 
-let options: IEntitySQLModelOptions = {
+let options: any = {
     table: 'main',
     entity: Main,
     schemas: [
@@ -84,7 +83,7 @@ export default new MainModel(options);
 
 where Main is
 ```
-let Entity = require('@bestapps/microservice-entity').Entity";
+let Entity = require('@bestapps/microservice-entity').entity.Entity";
 
 class Main extends Entity {
 
