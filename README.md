@@ -122,5 +122,4 @@ class Main extends Entity {
 }
 
 export default Main;
-
 ```
