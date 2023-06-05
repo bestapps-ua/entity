@@ -10,7 +10,7 @@
         "url": "https://github.com/bestapps-ua/microservice.entity/issues"
     },
     "main": "dist/index.js",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "dependencies": {
         "@bestapps/raks-sql": "1.0.15",
         "@types/jest": "^25.2.3",

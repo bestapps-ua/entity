@@ -10,10 +10,12 @@ import * as Events from "events";
 import globalEventModel from "./model/event/GlobalEventModel";
 import configModel from "./model/ConfigModel";
 import RegistryModel from "./model/RegistryModel";
+import List from "./entity/List";
 
 export default {
     entity: {
         Entity,
+        List,
         CacheEntity,
     },
     model: {
