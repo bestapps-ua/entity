@@ -10,8 +10,8 @@
         "url": "https://github.com/bestapps-ua/microservice.entity/issues"
     },
     "typings": "dist/index.d.ts",
-    "main": "dist/index.d.ts",
-    "version": "1.0.3",
+    "main": "dist/index.js",
+    "version": "1.0.4",
     "dependencies": {
         "@bestapps/raks-sql": "1.0.15",
         "@types/jest": "^25.2.3",
@@ -31,7 +31,7 @@
     "scripts": {
         "tsc": "tsc",
         "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
-        "prod": "tsc --skipLibCheck",
+        "prod": "tsc --skipLibCheck && node ./dist/index.js",
         "test": "NODE_ENV= jest",
         "unit": "npm run test --runInBand --detectOpenHandles --forceExit",
         "unitScript": "npm run test --runInBand --detectOpenHandles --forceExit -- "
