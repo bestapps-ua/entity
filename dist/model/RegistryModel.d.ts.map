@@ -1,0 +1,1 @@
+{"version":3,"file":"RegistryModel.d.ts","sourceRoot":"","sources":["../../src/model/RegistryModel.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,OAAO,OAAO,aAAa;IAC9B,MAAM,CAAC,GAAG,CAAC,GAAG,EAAE,MAAM,EAAE,KAAK,EAAE,GAAG;IAIlC,MAAM,CAAC,GAAG,CAAC,GAAG,EAAE,MAAM;IAItB,MAAM,CAAC,IAAI;CAGd"}

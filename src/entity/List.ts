@@ -1,4 +1,4 @@
-import Entity from "./entity";
+import Entity from "./Entity";
 
 class List extends Entity {
     private _items: Array<Entity> = [];

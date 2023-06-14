@@ -1,0 +1,1 @@
+{"version":3,"file":"IEntityItemsFilter.d.ts","sourceRoot":"","sources":["../../../../src/interface/entity/items/IEntityItemsFilter.ts"],"names":[],"mappings":"AAAA,OAAO,iBAAiB,MAAM,qBAAqB,CAAC;AACpD,OAAO,gBAAgB,MAAM,oBAAoB,CAAC;AAElD,UAAU,kBAAkB;IACxB,IAAI,CAAC,EAAE,gBAAgB,GAAC,gBAAgB,EAAE,CAAC;IAC3C,KAAK,CAAC,EAAE,iBAAiB,GAAC,iBAAiB,EAAE,CAAC;CACjD;AAED,eAAe,kBAAkB,CAAC"}

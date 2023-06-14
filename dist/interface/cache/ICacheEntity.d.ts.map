@@ -1,0 +1,1 @@
+{"version":3,"file":"ICacheEntity.d.ts","sourceRoot":"","sources":["../../../src/interface/cache/ICacheEntity.ts"],"names":[],"mappings":"AAAA,OAAO,MAAM,MAAM,qBAAqB,CAAC;AAEzC,UAAU,YAAY;IAClB,GAAG,EAAE,MAAM,CAAC;IACZ,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;IAChB,IAAI,EAAE,MAAM,CAAC;CAChB;AAED,eAAe,YAAY,CAAC"}

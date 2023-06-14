@@ -11,6 +11,13 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "pretty": true,
+        "allowJs": true,
+        // Generate d.ts files
+        "declaration": true,
+         // This compiler run should
+        // only output d.ts files
+        "emitDeclarationOnly": true,
+        "declarationMap": true,
         "types": [
             "jest",
             "node"

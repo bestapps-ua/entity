@@ -1,7 +1,7 @@
 import IConfigCache from "../interface/config/IConfigCache";
 
 class ConfigModel {
-    protected cacheConfig: IConfigCache;
+    cacheConfig: IConfigCache;
 
     setCacheConfig(cfg: IConfigCache) {
         this.cacheConfig = cfg;

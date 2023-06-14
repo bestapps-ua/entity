@@ -1,0 +1,1 @@
+{"version":3,"file":"IEntitySQLMakeErrorResponse.d.ts","sourceRoot":"","sources":["../../../../../src/interface/entity/sql/make/IEntitySQLMakeErrorResponse.ts"],"names":[],"mappings":"AAAA,UAAU,2BAA2B;IACjC,KAAK,EAAE,GAAG,CAAC;IACX,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,QAAQ,CAAC,EAAE,MAAM,CAAC;CACrB;AACD,eAAe,2BAA2B,CAAC"}

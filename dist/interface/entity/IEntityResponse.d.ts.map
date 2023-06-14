@@ -1,0 +1,1 @@
+{"version":3,"file":"IEntityResponse.d.ts","sourceRoot":"","sources":["../../../src/interface/entity/IEntityResponse.ts"],"names":[],"mappings":"AAAA,OAAO,MAAM,MAAM,qBAAqB,CAAC;AAEzC,UAAU,eAAe;IACrB,CAAC,GAAG,EAAE,MAAM,GAAC,GAAG,EAAE,IAAI,CAAC,EAAE,MAAM,GAAG,IAAI,CAAC;CAC1C;AAED,eAAe,eAAe,CAAC"}
