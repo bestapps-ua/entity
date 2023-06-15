@@ -1,3 +1,6 @@
+### Version 1.0.5
+Changed exports
+
 ### Version 1.0.3
 
 Moved to ts and fixed ts types for external usage

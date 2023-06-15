@@ -12,7 +12,7 @@ import configModel from "./model/ConfigModel";
 import RegistryModel from "./model/RegistryModel";
 import List from "./entity/List";
 
-export default {
+module.exports = {
     entity: {
         Entity,
         List,

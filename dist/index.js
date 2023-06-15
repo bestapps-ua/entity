@@ -39,7 +39,7 @@ const GlobalEventModel_1 = __importDefault(require("./model/event/GlobalEventMod
 const ConfigModel_1 = __importDefault(require("./model/ConfigModel"));
 const RegistryModel_1 = __importDefault(require("./model/RegistryModel"));
 const List_1 = __importDefault(require("./entity/List"));
-exports.default = {
+module.exports = {
     entity: {
         Entity: Entity_1.default,
         List: List_1.default,
