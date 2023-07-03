@@ -1,4 +1,9 @@
 import IEntitySQLModel from "./IEntitySQLModel";
+import Entity from "../../../entity/Entity";
+
+interface IEntitySchemeCallback {
+    callback(err: any, entity: Entity);
+}
 
 interface IEntitySQLMakeScheme {
     field: string;
@@ -6,6 +11,7 @@ interface IEntitySQLMakeScheme {
     source?: {
         id: string;
         model?: IEntitySQLModel|string;
+        callback?: (IEntitySchemeCallback) => void;
     };
     isLazy?: boolean;
     optional?: boolean;

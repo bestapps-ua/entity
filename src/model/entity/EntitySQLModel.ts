@@ -176,6 +176,19 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 } else {
                     item = data[entityId];
                 }
+
+                if(source.callback) {
+                    try {
+                        item = await new Promise((res, rej) => {
+                            source.callback((err, entity: Entity) => {
+                                if(err) return rej(err);
+                                res(entity);
+                            });
+                        });
+                    }catch (e){
+                        console.log('err make by callback', e);
+                    }
+                }
                 if (schema.type && schema.type === 'json') {
                     item = item ? JSON.parse(item) : {};
                 }
