@@ -64,7 +64,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     get sql(): any {
         if (!this._sql) {
             this._sql = RegistryModel.get('sql');
-            if(!this._sql) {
+            if (!this._sql) {
                 throw 'Please set in Registry - sql';
             }
         }
@@ -173,22 +173,22 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                             error: e,
                         });
                     }
+                } else if (source.callback) {
+                    try {
+                        item = await new Promise((res, rej) => {
+                            source.callback(data[entityId], (err, entity: Entity) => {
+                                if (err) return rej(err);
+                                res(entity);
+                            });
+                        });
+                    } catch (e) {
+                        console.log('err make by callback', e);
+                    }
                 } else {
                     item = data[entityId];
                 }
 
-                if(source.callback) {
-                    try {
-                        item = await new Promise((res, rej) => {
-                            source.callback(data[entityId],(err, entity: Entity) => {
-                                if(err) return rej(err);
-                                res(entity);
-                            });
-                        });
-                    }catch (e){
-                        console.log('err make by callback', e);
-                    }
-                }
+
                 if (schema.type && schema.type === 'json') {
                     item = item ? JSON.parse(item) : {};
                 }
