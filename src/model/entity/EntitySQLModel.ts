@@ -180,7 +180,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 if(source.callback) {
                     try {
                         item = await new Promise((res, rej) => {
-                            source.callback(entityId,(err, entity: Entity) => {
+                            source.callback(data[entityId],(err, entity: Entity) => {
                                 if(err) return rej(err);
                                 res(entity);
                             });
