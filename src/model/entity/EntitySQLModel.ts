@@ -141,6 +141,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                     id: schema.field,
                 }
                 const entityId = source.id;
+                console.log('SCHEMA', source, '>>>', schema);
                 if (source.model) {
                     if (schema.source.model === 'this') {
                         schema.source.model = this;
@@ -173,10 +174,10 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                             error: e,
                         });
                     }
-                } else if (source.callback) {
+                } else if (schema.source && schema.source.callback) {
                     try {
                         item = await new Promise((res, rej) => {
-                            source.callback(data[entityId], (err, entity: Entity) => {
+                            schema.source.callback(data[entityId], (err, entity: Entity) => {
                                 if (err) return rej(err);
                                 res(entity);
                             });
