@@ -11,7 +11,7 @@ interface IEntitySQLMakeScheme {
     source?: {
         id: string;
         model?: IEntitySQLModel|string;
-        callback?: (IEntitySchemeCallback) => void;
+        callback?: (id: number| string, IEntitySchemeCallback) => void;
     };
     isLazy?: boolean;
     optional?: boolean;
