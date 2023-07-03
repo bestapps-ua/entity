@@ -1,4 +1,4 @@
-### Version 1.0.10
+### Version 1.0.11
 Added callback in schema - schema.callback
 
 ### Version 1.0.5

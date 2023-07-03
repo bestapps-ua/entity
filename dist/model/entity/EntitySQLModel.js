@@ -128,6 +128,7 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                     id: schema.field,
                 };
                 const entityId = source.id;
+                //console.log('SCHEMA', source, '>>>', schema);
                 if (source.model) {
                     if (schema.source.model === 'this') {
                         schema.source.model = this;
@@ -161,6 +162,20 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                             sourceId: entityId,
                             error: e,
                         });
+                    }
+                }
+                else if (source.callback) {
+                    try {
+                        item = yield new Promise((res, rej) => {
+                            source.callback(data[entityId], (err, entity) => {
+                                if (err)
+                                    return rej(err);
+                                res(entity);
+                            });
+                        });
+                    }
+                    catch (e) {
+                        console.log('err make by callback', e);
                     }
                 }
                 else {

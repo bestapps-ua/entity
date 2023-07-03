@@ -5,6 +5,7 @@ interface IEntitySQLMakeScheme {
     source?: {
         id: string;
         model?: IEntitySQLModel | string;
+        callback?: (id: number | string, IEntitySchemeCallback: any) => void;
     };
     isLazy?: boolean;
     optional?: boolean;
