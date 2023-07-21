@@ -9,7 +9,7 @@ describe('Cache', () => {
     it('Main',  async () => {
         return new Promise(async (resolve) => {
 
-            testRedisHelper.prepare();
+            await testRedisHelper.prepare();
             const entity = await mainEntityHelper.generate();
             mainModel.setCacheModel(cacheHelper.getFactory(CACHE_TYPE_REDIS));
             mainModel.setCacheTtl(1);
@@ -24,7 +24,7 @@ describe('Cache', () => {
             setTimeout(async () => {
                 mainEntity = await mainModel.getAsync(mainEntity.id) as Main;
                 expect(mainEntity.system.isCache).toBe(false);
-                resolve();
+                resolve(undefined);
             }, 1001);
         });
     });

@@ -20,9 +20,23 @@ let uuid4 = require('uuid/v4');
 class EntitySQLModel extends EntityBaseSQLModel_1.default {
     constructor(options) {
         super(options);
+        this.specialFields = {
+            uid: {
+                name: 'uid',
+                isFound: false,
+            },
+            created: {
+                name: 'created',
+                isFound: false,
+            },
+        };
         this.table = options.table;
         this.options.schemas = this.options.schemas || [];
         this._fillDefault();
+        GlobalEventModel_1.default.getEmitter().on(Events_1.EVENT_SQL_CONNECTED, () => __awaiter(this, void 0, void 0, function* () {
+            GlobalEventModel_1.default.getEmitter().emit(Events_1.EVENT_SQL_MODEL_LOADING, { model: this });
+            this.autoFindFields();
+        }));
     }
     _fillDefault() {
         const fields = [
@@ -36,9 +50,49 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                 field: 'created',
             }
         ];
+        //searching in main schema special fields
+        for (const schema of this.options.schemas) {
+            if (!schema.type || ['uid', 'created'].indexOf(schema.type) === -1)
+                continue;
+            this.specialFields[schema.type].isFound = true;
+            const fieldId = schema.source ? schema.source.id : schema.field;
+            this.specialFields[schema.type].name = fieldId;
+        }
         for (const field of fields) {
+            let special = this.specialFields[field.field];
+            //exclude default if found already
+            if (special && special.isFound) {
+                continue;
+            }
             this.options.schemas.push(field);
         }
+    }
+    autoFindFields() {
+        let q = `
+            DESCRIBE ${this.tableEscaped}
+        `;
+        this.sql.query(q, undefined, (err, rows) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield new Promise((resolve, reject) => {
+                    if (err || !rows)
+                        return reject(err || `error DESCRIBE ${this.tableEscaped}`);
+                    for (const row of rows) {
+                        let field = row['Field'].toLowerCase();
+                        for (const name in this.specialFields) {
+                            let specialField = this.specialFields[name];
+                            if (specialField.name.toLowerCase() === field) {
+                                specialField.isFound = true;
+                            }
+                        }
+                        //TODO: check schema and alert if not found in list
+                    }
+                    GlobalEventModel_1.default.getEmitter().emit(Events_1.EVENT_SQL_MODEL_LOADED, { model: this });
+                });
+            }
+            catch (err) {
+                console.log('[err autoFindFields]', err);
+            }
+        }));
     }
     get table() {
         if (!this._table)
@@ -105,18 +159,29 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
         });
     }
     make(data, callback) {
+        function processCallback(id, callback) {
+            return __awaiter(this, void 0, void 0, function* () {
+                return yield new Promise((res, rej) => {
+                    callback(id, (err, entity) => {
+                        if (err)
+                            return rej(err);
+                        res(entity);
+                    });
+                });
+            });
+        }
         if (!data) {
             return callback && callback({ data, errors: [{ error: `no data provided in ${this.constructor.name}.make` }] });
         }
         let t1 = Date.now();
         let itemData = {
             id: data.id,
-            uid: data.uid,
+            uid: data[this.specialFields.uid.name],
             system: {
                 isCache: false,
                 ttl: 0,
             },
-            created: data.created,
+            created: data[this.specialFields.created.name],
         };
         let p = [];
         let errors = [];
@@ -128,7 +193,6 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                     id: schema.field,
                 };
                 const entityId = source.id;
-                //console.log('SCHEMA', source, '>>>', schema);
                 if (source.model) {
                     if (schema.source.model === 'this') {
                         schema.source.model = this;
@@ -165,17 +229,30 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                     }
                 }
                 else if (source.callback) {
-                    try {
-                        item = yield new Promise((res, rej) => {
-                            source.callback(data[entityId], (err, entity) => {
-                                if (err)
-                                    return rej(err);
-                                res(entity);
-                            });
-                        });
+                    if (schema.optional && !data[entityId]) {
+                        return resolve(item);
                     }
-                    catch (e) {
-                        console.log('err make by callback', e);
+                    if (schema.isLazy) {
+                        item = (() => {
+                            return function lazy() {
+                                return (() => __awaiter(this, void 0, void 0, function* () {
+                                    try {
+                                        return yield processCallback(data[entityId], source.callback);
+                                    }
+                                    catch (e) {
+                                        console.log('[error callback lazy load]', entityId, e);
+                                    }
+                                }));
+                            };
+                        })();
+                    }
+                    else {
+                        try {
+                            item = yield processCallback(data[entityId], source.callback);
+                        }
+                        catch (e) {
+                            console.log('err make by callback', e);
+                        }
                     }
                 }
                 else {
@@ -197,7 +274,11 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
         });
     }
     getByUid(uid, callback) {
-        this.getOneByParams([{ key: 'uid', value: uid }], callback);
+        if (!this.specialFields.uid.isFound) {
+            console.log('[err getByUid]', `uid field was not found, using it as id instead`);
+            return this.get(uid, callback);
+        }
+        this.getOneByParams([{ key: this.specialFields.uid.name, value: uid }], callback);
     }
     getByUidAsync(uid) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -400,7 +481,8 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
         let q = `
             DELETE
             FROM ${this.tableEscaped}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
         this.sql.query(q, item.id, (err) => __awaiter(this, void 0, void 0, function* () {
             yield this.cacheInvalidateAsync(item.id);
@@ -461,12 +543,20 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             return new Promise((resolve, reject) => {
                 let p = [];
                 for (const schema of this.schemas) {
-                    if (schema.field === 'id')
+                    const isSource = schema.source;
+                    const fieldId = isSource ? schema.source.id : schema.field;
+                    if (fieldId === 'id') {
                         continue;
+                    }
+                    const specialField = Object.values(this.specialFields).find((element) => {
+                        return element.name === fieldId;
+                    });
+                    if (specialField && !specialField.isFound) {
+                        continue;
+                    }
                     p.push(new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
                         try {
                             let val = yield entity[schema.field];
-                            const isSource = schema.source;
                             if (isSource) {
                                 if (val) {
                                     val = val.id;
@@ -479,7 +569,7 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                             }
                             val = yield this.beforeCreate(schema.field, val);
                             res({
-                                field: isSource ? schema.source.id : schema.field,
+                                field: fieldId,
                                 value: val,
                             });
                         }
@@ -536,10 +626,10 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
     beforeCreate(field, value) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!value) {
-                if (field === 'created') {
+                if (field === this.specialFields.created.name) {
                     value = Date.now() / 1000;
                 }
-                if (field === 'uid') {
+                if (field === this.specialFields.uid.name) {
                     value = yield this.generateUidAsync();
                 }
             }
@@ -612,7 +702,8 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             const q = `
             UPDATE ${this.tableEscaped}
             SET ${names.join(', ')}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
             return new Promise((resolve, reject) => {
                 this.sql.query(q, values, (err) => __awaiter(this, void 0, void 0, function* () {
@@ -660,7 +751,8 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             const q = `
             UPDATE ${this.tableEscaped}
             SET ${name}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
             return new Promise((resolve, reject) => {
                 this.sql.query(q, values, (err) => __awaiter(this, void 0, void 0, function* () {

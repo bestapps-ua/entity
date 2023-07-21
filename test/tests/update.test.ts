@@ -10,20 +10,23 @@ let uuid4 = require('uuid/v4');
 
 describe('Update', () => {
     it('Main', async () => {
-        testHelper.prepare();
+        await testHelper.prepare();
         let entity = await mainEntityHelper.create();
         entity.name = `changed${uuid4()}`;
         entity.data = {
             test: 123,
         };
+
+
         let entityAfter = await mainModel.updateAsync(entity) as Main;
         await mainEntityHelper.checkAllData(entity, entityAfter);
         let entityUpdated = await mainModel.getAsync(entity.id) as Main;
         await mainEntityHelper.checkAllData(entity, entityUpdated);
+
     });
 
     it('Main with Parent - remove', async () => {
-        testHelper.prepare();
+        await testHelper.prepare();
         let entity = await mainEntityHelper.create({withParent: true});
         entity.parent = undefined;
         entity.name = `changed${uuid4()}`;
@@ -40,13 +43,13 @@ describe('Update', () => {
     it('Event', () => {
         return new Promise(async (resolve) => {
 
-            testHelper.prepare();
+            await testHelper.prepare();
             let can = true;
             globalEventModel.getEmitter().on(EVENT_ENTITY_UPDATED, async (data) => {
                 if (!can) return;
                 can = false;
                 await mainEntityHelper.checkAllData(data.entity.props, entity);
-                resolve();
+                resolve(undefined);
             });
             let entity = await mainEntityHelper.create();
             entity.name = `changed${uuid4()}`;

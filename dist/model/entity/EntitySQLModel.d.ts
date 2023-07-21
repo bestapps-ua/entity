@@ -13,8 +13,19 @@ declare class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLMod
     options: IEntitySQLModelOptions;
     protected _table: string;
     private _sql;
+    protected specialFields: {
+        uid: {
+            name: string;
+            isFound: boolean;
+        };
+        created: {
+            name: string;
+            isFound: boolean;
+        };
+    };
     constructor(options: IEntitySQLModelOptions);
     private _fillDefault;
+    private autoFindFields;
     get table(): string;
     get tableEscaped(): string;
     set table(value: string);

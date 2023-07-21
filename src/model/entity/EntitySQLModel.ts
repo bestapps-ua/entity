@@ -12,7 +12,13 @@ import IEntityResponse from "../../interface/entity/IEntityResponse";
 import IEntitySQLMakeResponse from "../../interface/entity/sql/make/IEntitySQLMakeResponse";
 import IEntitySQLMakeListResponse from "../../interface/entity/sql/make/IEntitySQLMakeListResponse";
 import globalEventModel from "../event/GlobalEventModel";
-import {EVENT_ENTITY_CREATED, EVENT_ENTITY_UPDATED} from "../event/Events";
+import {
+    EVENT_ENTITY_CREATED,
+    EVENT_ENTITY_UPDATED,
+    EVENT_SQL_MODEL_LOADED,
+    EVENT_SQL_MODEL_LOADING,
+    EVENT_SQL_CONNECTED
+} from "../event/Events";
 import RegistryModel from "../RegistryModel";
 
 let uuid4 = require('uuid/v4');
@@ -23,11 +29,26 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     protected _table: string;
     private _sql: any;
 
+    protected specialFields = {
+        uid: {
+            name: 'uid',
+            isFound: false,
+        },
+        created: {
+            name: 'created',
+            isFound: false,
+        },
+    };
+
     constructor(options: IEntitySQLModelOptions) {
         super(options);
         this.table = options.table;
         this.options.schemas = this.options.schemas || [];
         this._fillDefault();
+        globalEventModel.getEmitter().on(EVENT_SQL_CONNECTED, async () => {
+            globalEventModel.getEmitter().emit(EVENT_SQL_MODEL_LOADING, {model: this});
+            this.autoFindFields();
+        });
     }
 
     private _fillDefault() {
@@ -42,9 +63,49 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 field: 'created',
             }
         ];
+
+        //searching in main schema special fields
+        for (const schema of this.options.schemas) {
+            if (!schema.type || ['uid', 'created'].indexOf(schema.type) === -1) continue;
+            this.specialFields[schema.type].isFound = true;
+            const fieldId = schema.source ? schema.source.id : schema.field;
+            this.specialFields[schema.type].name = fieldId;
+        }
+
         for (const field of fields) {
+            let special = this.specialFields[field.field];
+            //exclude default if found already
+            if (special && special.isFound) {
+                continue;
+            }
             this.options.schemas.push(field);
         }
+    }
+
+    private autoFindFields() {
+        let q = `
+            DESCRIBE ${this.tableEscaped}
+        `;
+        this.sql.query(q, undefined, async (err, rows) => {
+            try {
+                await new Promise((resolve, reject) => {
+                    if (err || !rows) return reject(err || `error DESCRIBE ${this.tableEscaped}`);
+                    for (const row of rows) {
+                        let field = row['Field'].toLowerCase();
+                        for (const name in this.specialFields) {
+                            let specialField = this.specialFields[name];
+                            if (specialField.name.toLowerCase() === field) {
+                                specialField.isFound = true;
+                            }
+                        }
+                        //TODO: check schema and alert if not found in list
+                    }
+                    globalEventModel.getEmitter().emit(EVENT_SQL_MODEL_LOADED, {model: this});
+                });
+            } catch (err) {
+                console.log('[err autoFindFields]', err);
+            }
+        });
     }
 
     get table(): string {
@@ -118,18 +179,27 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     }
 
     public make(data: any, callback: IEntitySQLMakeResponse) {
+        async function processCallback(id, callback) {
+            return await new Promise((res, rej) => {
+                callback(id, (err, entity: Entity) => {
+                    if (err) return rej(err);
+                    res(entity);
+                });
+            });
+        }
+
         if (!data) {
             return callback && callback({data, errors: [{error: `no data provided in ${this.constructor.name}.make`}]});
         }
         let t1 = Date.now();
         let itemData = {
             id: data.id,
-            uid: data.uid,
+            uid: data[this.specialFields.uid.name],
             system: {
                 isCache: false,
                 ttl: 0,
             },
-            created: data.created,
+            created: data[this.specialFields.created.name],
         };
         let p = [];
         let errors = [];
@@ -141,7 +211,6 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                     id: schema.field,
                 }
                 const entityId = source.id;
-                //console.log('SCHEMA', source, '>>>', schema);
                 if (source.model) {
                     if (schema.source.model === 'this') {
                         schema.source.model = this;
@@ -175,20 +244,31 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                         });
                     }
                 } else if (source.callback) {
-                    try {
-                        item = await new Promise((res, rej) => {
-                            source.callback(data[entityId], (err, entity: Entity) => {
-                                if (err) return rej(err);
-                                res(entity);
-                            });
-                        });
-                    } catch (e) {
-                        console.log('err make by callback', e);
+                    if (schema.optional && !data[entityId]) {
+                        return resolve(item);
+                    }
+                    if (schema.isLazy) {
+                        item = (() => {
+                            return function lazy() {
+                                return (async () => {
+                                    try {
+                                        return await processCallback(data[entityId], source.callback);
+                                    } catch (e) {
+                                        console.log('[error callback lazy load]', entityId, e);
+                                    }
+                                });
+                            }
+                        })();
+                    } else {
+                        try {
+                            item = await processCallback(data[entityId], source.callback);
+                        } catch (e) {
+                            console.log('err make by callback', e);
+                        }
                     }
                 } else {
                     item = data[entityId];
                 }
-
 
                 if (schema.type && schema.type === 'json') {
                     item = item ? JSON.parse(item) : {};
@@ -208,7 +288,11 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     }
 
     getByUid(uid: string, callback) {
-        this.getOneByParams([{key: 'uid', value: uid}], callback);
+        if (!this.specialFields.uid.isFound) {
+            console.log('[err getByUid]', `uid field was not found, using it as id instead`);
+            return this.get(uid, callback);
+        }
+        this.getOneByParams([{key: this.specialFields.uid.name, value: uid}], callback);
     }
 
     async getByUidAsync(uid: string): Promise<Entity> {
@@ -412,7 +496,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         let q = `
             DELETE
             FROM ${this.tableEscaped}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
         this.sql.query(q, item.id, async (err) => {
             await this.cacheInvalidateAsync(item.id);
@@ -469,11 +554,21 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         return new Promise((resolve, reject) => {
             let p = [];
             for (const schema of this.schemas) {
-                if (schema.field === 'id') continue;
+                const isSource = schema.source;
+                const fieldId = isSource ? schema.source.id : schema.field;
+                if (fieldId === 'id') {
+                    continue;
+                }
+
+                const specialField = Object.values(this.specialFields).find((element) => {
+                    return element.name === fieldId;
+                });
+                if (specialField && !specialField.isFound) {
+                    continue;
+                }
                 p.push(new Promise(async (res, rej) => {
                     try {
                         let val = await entity[schema.field];
-                        const isSource = schema.source;
                         if (isSource) {
                             if (val) {
                                 val = val.id;
@@ -485,7 +580,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                         }
                         val = await this.beforeCreate(schema.field, val);
                         res({
-                            field: isSource ? schema.source.id : schema.field,
+                            field: fieldId,
                             value: val,
                         });
                     } catch (err) {
@@ -539,11 +634,11 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
     protected async beforeCreate(field: string, value: any) {
         if (!value) {
-            if (field === 'created') {
+            if (field === this.specialFields.created.name) {
                 value = Date.now() / 1000;
             }
 
-            if (field === 'uid') {
+            if (field === this.specialFields.uid.name) {
                 value = await this.generateUidAsync();
             }
         }
@@ -612,7 +707,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         const q = `
             UPDATE ${this.tableEscaped}
             SET ${names.join(', ')}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
         return new Promise((resolve, reject) => {
             this.sql.query(q, values, async (err) => {
@@ -658,7 +754,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         const q = `
             UPDATE ${this.tableEscaped}
             SET ${name}
-            WHERE id = ? LIMIT 1
+            WHERE id = ?
+            LIMIT 1
         `;
         return new Promise((resolve, reject) => {
             this.sql.query(q, values, async (err) => {

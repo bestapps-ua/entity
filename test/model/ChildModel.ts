@@ -4,7 +4,7 @@ import MainModel from "./MainModel";
 import Child from "../entity/Child";
 
 let options: IEntitySQLModelOptions = {
-    table: 'main',
+    table: 'child',
     entity: Child,
     schemas: [
         {

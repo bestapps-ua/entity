@@ -1,6 +1,8 @@
 'use strict';
 
 import RegistryModel from "../../src/model/RegistryModel";
+import {EVENT_SQL_CONNECTED} from "../../src/model/event/Events";
+import globalEventModel from "../../src/model/event/GlobalEventModel";
 
 let config = require('config');
 
@@ -24,7 +26,8 @@ RegistryModel.set('sql', sql);
 (async() => {
     await new Promise((resolve) => {
         sql.connect(() => {
-            resolve();
+            globalEventModel.getEmitter().emit(EVENT_SQL_CONNECTED, {});
+            resolve(undefined);
         });
     });
 })();

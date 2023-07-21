@@ -8,7 +8,7 @@ import cacheHelper from "../../helper/CacheHelper";
 describe('Cache', () => {
     it('Main', async () => {
         return new Promise(async (resolve) => {
-            testHelper.prepare();
+            await testHelper.prepare();
             const entity = await mainEntityHelper.generate();
             mainModel.setCacheModel(cacheHelper.getFactory(CACHE_TYPE_MEMORY));
             mainModel.setCacheTtl(1);
@@ -23,7 +23,7 @@ describe('Cache', () => {
             setTimeout(async () => {
                 mainEntity = await mainModel.getAsync(mainEntity.id) as Main;
                 expect(mainEntity.system.isCache).toBe(false);
-                resolve();
+                resolve(undefined);
             }, 1001);
         });
     });

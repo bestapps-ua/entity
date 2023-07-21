@@ -47,17 +47,17 @@ async function check(type, options: any = undefined) {
 
 describe('List', () => {
     it('Filters', async () => {
-        testHelper.prepare();
+        await testHelper.prepare();
         await check('filters');
     });
 
     it('Where without Filters', async () => {
-        testHelper.prepare();
+        await testHelper.prepare();
         await check('where');
     });
 
     it('Limit', async () => {
-        testHelper.prepare();
+        await testHelper.prepare();
         await check('where', {limit: 3});
     });
 });
