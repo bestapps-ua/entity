@@ -1,3 +1,27 @@
+### Version 1.0.12
+1. Added in model:
+schema.callback - gives possibility to load external object (see test/model/MainModel.ts for spcialModel)
+schema.type:
+- uid - marking this field as UID field (event with other name, see test/model/SpecialModel.ts) 
+- created - marking this field as CREATED field (unix timestamp)
+
+2. Added events:
+EVENT_SQL_CONNECTED - use it if you want to check DB table data for each model, send on sql.connect was success
+EVENT_SQL_MODEL_LOADING
+EVENT_SQL_MODEL_LOADED
+EVENT_SQL_MODELS_LOADED
+
+3. Fix for models which not have in DB table fields: uid, created.
+Will be ignored in create DB row action (create, createAsync)
+
+4. Added AppModel - will figure out each model load status (see statuses upper) 
+and send signaling EVENT_SQL_MODELS_LOADED which indicates ALL models loaded successfully
+
+5. Improved autotests
+6. Exported all interfaces
+7. Added AppModel
+
+
 ### Version 1.0.11
 Added callback in schema - schema.callback
 

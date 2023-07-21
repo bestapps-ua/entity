@@ -1,23 +1,36 @@
+#Contents
+
+- [Examples](#Examples)
+
+- [Configuration](#Configuration)
+
+- [Unit tests](#Unit-tests)
+
 # Examples
 
 See `test/model` and `test/tests`
 
-# Test
-
-`npm run unit`
-
-
 # Configuration
+
+You need to setup:
+- sql model
+- config model
+- registry model
+- app model
+- your models extended from EntitySQLModel
+
+See all below.
 
 ### SQLModel
 
 Copy paste from test/model/SQLModel.ts
 
-### ConfigModel
+### Config and Registry Models
+Requiring to normal work of models
 
 ``` 
-let configModel = require('@bestapps/microservice-entity').model.configModel;
-let RegistryModel = require('@bestapps/microservice-entity').model.RegistryModel;
+import {configModel} from '@bestapps/microservice-entity';
+import {RegistryModel} from '@bestapps/microservice-entity';
 
 
 configModel.setCacheConfig(config.cache);
@@ -41,13 +54,23 @@ where config.cache - is cache config from your config file eg:
     }
 ```
 
+# APP Model
+Responsible for models loading, requires EVENT_SQL_CONNECTED to be sent
+
+In your code just do:
+```
+import {appModel} from "@bestapps/microservice-entity";
+appModel.init();
+
+```
+
 # Entity Models
 
 Examples is in test/model
 
 ### Basic scheme
 ```
-let EntitySQLModel = require('@bestapps/microservice-entity').model.entity.EntitySQLModel;
+import {EntitySQLModel} from "@bestapps/microservice-entity";
 
 import Main from "../entity/Main";
 
@@ -81,9 +104,14 @@ class MainModel extends EntitySQLModel {
 export default new MainModel(options);
 ```
 
+where type can be:
+- json (data in Object)
+- uid (indicates that field is we using for uid)
+- created (when entity created in unix timestamp format)
+
 where Main is
 ```
-let Entity = require('@bestapps/microservice-entity').entity.Entity";
+import {Entity} from "@bestapps/microservice-entity";
 
 class Main extends Entity {
 
@@ -123,3 +151,28 @@ class Main extends Entity {
 
 export default Main;
 ```
+
+# Unit tests
+
+1. Create special MySQL DB for project
+2. mysqldump data from data/init.sql
+3. Setup local config in config/ directory:
+
+```
+  cp test.example.json local.json
+```
+4. Fill there db category with all required data
+
+Now you can test everything:
+
+```
+    npm run unit
+```
+
+If you want to test some script you can do for example:
+
+```
+    npm run unit -- create.test.ts
+```
+
+
