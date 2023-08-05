@@ -27,29 +27,6 @@ import _IEntityModelOptions from "./interface/entity/IEntityModelOptions";
 import _IEntityCacheOptions from "./interface/entity/IEntityCacheOptions";
 import _IEntityResponse from "./interface/entity/IEntityResponse";
 
-
-import _CacheEntity from "./entity/CacheEntity";
-import _Entity from "./entity/Entity";
-import _List from "./entity/List";
-
-import appModel from './model/AppModel';
-import RegistryModel from "./model/RegistryModel";
-import configModel from "./model/ConfigModel";
-
-import _CacheBaseModel from './model/cache/CacheBaseModel';
-import * as cfm from './model/cache/CacheFactoryModel';
-import _CacheMemoryModel from './model/cache/CacheMemoryModel';
-import _CacheRedisModel from './model/cache/CacheRedisModel';
-
-import _EntityModel from './model/entity/EntityModel';
-import _EntitySQLModel from './model/entity/EntitySQLModel';
-import _EntityBaseSQLModel from './model/entity/EntityBaseSQLModel';
-import _EntityCacheModel from './model/entity/EntityCacheModel';
-
-import * as events from './model/event/Events';
-import globalEventModel from './model/event/GlobalEventModel';
-
-
 namespace BestApps {
     export namespace interfaces {
         export interface ICacheEntity extends _ICacheEntity {
@@ -120,50 +97,6 @@ namespace BestApps {
 
         export interface IEntityResponse extends _IEntityResponse {
         }
-    }
-
-    export namespace entities {
-        export class CacheEntity extends _CacheEntity {
-
-        }
-
-        export class Entity extends _Entity {
-
-        }
-
-        export class List extends _List {
-
-        }
-
-    }
-
-    export namespace models {
-        export function getAppModel() {
-            return appModel;
-        }
-        export function getRegistryModel() {
-            return RegistryModel;
-        }
-        export function getConfigModel() {
-            return configModel;
-        }
-
-        export function getGlobalEventModel() {
-            return globalEventModel;
-        }
-
-        export function getEvents(){
-            return events;
-        }
-
-        export class CacheBaseModel extends _CacheBaseModel {}
-        export class CacheMemoryModel extends _CacheMemoryModel {}
-        export class CacheRedisModel extends _CacheRedisModel {}
-        export class EntityModel extends _EntityModel {}
-        export class EntitySQLModel extends _EntitySQLModel {}
-        export class EntityBaseSQLModel extends _EntityBaseSQLModel {}
-        export class EntityCacheModel extends _EntityCacheModel {}
-        export class CacheFactoryModel extends cfm.CacheFactoryModel {}
     }
 }
 

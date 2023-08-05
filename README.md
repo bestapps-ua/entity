@@ -29,8 +29,8 @@ Copy paste from test/model/SQLModel.ts
 Requiring to normal work of models
 
 ``` 
-import {configModel} from '@bestapps/microservice-entity';
-import {RegistryModel} from '@bestapps/microservice-entity';
+import configModel from '@bestapps/microservice-entity/dist/model/ConfigModel';
+import RegistryModel from '@bestapps/microservice-entity/dist/model/RegistryModel';
 
 
 configModel.setCacheConfig(config.cache);
@@ -59,7 +59,7 @@ Responsible for models loading, requires EVENT_SQL_CONNECTED to be sent
 
 In your code just do:
 ```
-import {appModel} from "@bestapps/microservice-entity";
+import appModel from "@bestapps/microservice-entity/dist/model/AppModel";
 appModel.init();
 
 ```
@@ -70,7 +70,7 @@ Examples is in test/model
 
 ### Basic scheme
 ```
-import {EntitySQLModel} from "@bestapps/microservice-entity";
+import EntitySQLModel from "@bestapps/microservice-entity/dist/model/entity/EntitySQLModel";
 
 import Main from "../entity/Main";
 
@@ -111,7 +111,7 @@ where type can be:
 
 where Main is
 ```
-import {Entity} from "@bestapps/microservice-entity";
+import Entity from "@bestapps/microservice-entity/dist/entity/Entity";
 
 class Main extends Entity {
 
