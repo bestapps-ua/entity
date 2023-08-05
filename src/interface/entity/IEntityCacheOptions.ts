@@ -1,6 +1,6 @@
 import ICacheFactoryModel from "../cache/ICacheFactoryModel";
 
-export interface IEntityCacheOptions {
+interface IEntityCacheOptions {
     can: {
         store: boolean;
         fetch: boolean;
@@ -8,3 +8,5 @@ export interface IEntityCacheOptions {
     ttl: number;
     model: ICacheFactoryModel;
 }
+
+export default IEntityCacheOptions;

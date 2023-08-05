@@ -1,5 +1,5 @@
-import ICacheEntity from "../interface/cache/ICacheEntity";
 import Entity from "./Entity";
+import ICacheEntity from "../interface/cache/ICacheEntity";
 declare class CacheEntity implements ICacheEntity {
     private _data;
     private _expires;

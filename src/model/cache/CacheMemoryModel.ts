@@ -1,11 +1,12 @@
 'use strict';
 
 import ICacheOptions from "../../interface/cache/ICacheOptions";
-import ICacheModel from "../../interface/cache/ICacheModel";
-import ICacheEntity from "../../interface/cache/ICacheEntity";
+
 import CacheEntity from "../../entity/CacheEntity";
 import ICacheModelOptions from "../../interface/cache/ICacheModelOptions";
 import CacheBaseModel from "./CacheBaseModel";
+import ICacheEntity from "../../interface/cache/ICacheEntity";
+
 
 let storage = new Map();
 

@@ -1,8 +1,8 @@
 import ICacheOptions from "../../interface/cache/ICacheOptions";
-import ICacheEntity from "../../interface/cache/ICacheEntity";
 import CacheEntity from "../../entity/CacheEntity";
 import ICacheModelOptions from "../../interface/cache/ICacheModelOptions";
 import CacheBaseModel from "./CacheBaseModel";
+import ICacheEntity from "../../interface/cache/ICacheEntity";
 declare class CacheMemoryModel extends CacheBaseModel {
     constructor(options: ICacheModelOptions);
     fetch(id: number | string, options: ICacheOptions): Promise<CacheEntity>;

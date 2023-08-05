@@ -6,7 +6,7 @@ import IEntityModelOptions from "../../interface/entity/IEntityModelOptions";
 import {CacheFactoryModel} from "../cache/CacheFactoryModel";
 import ICacheFactoryModel from "../../interface/cache/ICacheFactoryModel";
 import RegistryModel from "../RegistryModel";
-import {IEntityCacheOptions} from "../../interface/entity/IEntityCacheOptions";
+import IEntityCacheOptions from "../../interface/entity/IEntityCacheOptions";
 
 class EntityCacheModel extends EntityModel {
 

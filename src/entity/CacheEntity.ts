@@ -1,5 +1,6 @@
-import ICacheEntity from "../interface/cache/ICacheEntity";
+
 import Entity from "./Entity";
+import ICacheEntity from "../interface/cache/ICacheEntity";
 
 class CacheEntity implements ICacheEntity {
 
