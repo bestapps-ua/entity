@@ -21,19 +21,6 @@ import _IEntitySQLModelOptions from "./interface/entity/sql/IEntitySQLModelOptio
 import _IEntityModelOptions from "./interface/entity/IEntityModelOptions";
 import _IEntityCacheOptions from "./interface/entity/IEntityCacheOptions";
 import _IEntityResponse from "./interface/entity/IEntityResponse";
-import _CacheEntity from "./entity/CacheEntity";
-import _Entity from "./entity/Entity";
-import _List from "./entity/List";
-import RegistryModel from "./model/RegistryModel";
-import _CacheBaseModel from './model/cache/CacheBaseModel';
-import * as cfm from './model/cache/CacheFactoryModel';
-import _CacheMemoryModel from './model/cache/CacheMemoryModel';
-import _CacheRedisModel from './model/cache/CacheRedisModel';
-import _EntityModel from './model/entity/EntityModel';
-import _EntitySQLModel from './model/entity/EntitySQLModel';
-import _EntityBaseSQLModel from './model/entity/EntityBaseSQLModel';
-import _EntityCacheModel from './model/entity/EntityCacheModel';
-import * as events from './model/event/Events';
 declare namespace BestApps {
     namespace interfaces {
         interface ICacheEntity extends _ICacheEntity {
@@ -81,46 +68,6 @@ declare namespace BestApps {
         interface IEntityCacheOptions extends _IEntityCacheOptions {
         }
         interface IEntityResponse extends _IEntityResponse {
-        }
-    }
-    namespace entities {
-        class CacheEntity extends _CacheEntity {
-        }
-        class Entity extends _Entity {
-        }
-        class List extends _List {
-        }
-    }
-    namespace models {
-        function getAppModel(): {
-            init(): void;
-            getAppModels(): any;
-        };
-        function getRegistryModel(): typeof RegistryModel;
-        function getConfigModel(): {
-            cacheConfig: _IConfigCache;
-            setCacheConfig(cfg: _IConfigCache): void;
-            getCacheConfig(): _IConfigCache;
-        };
-        function getGlobalEventModel(): {
-            getEmitter(): any;
-        };
-        function getEvents(): typeof events;
-        class CacheBaseModel extends _CacheBaseModel {
-        }
-        class CacheMemoryModel extends _CacheMemoryModel {
-        }
-        class CacheRedisModel extends _CacheRedisModel {
-        }
-        class EntityModel extends _EntityModel {
-        }
-        class EntitySQLModel extends _EntitySQLModel {
-        }
-        class EntityBaseSQLModel extends _EntityBaseSQLModel {
-        }
-        class EntityCacheModel extends _EntityCacheModel {
-        }
-        class CacheFactoryModel extends cfm.CacheFactoryModel {
         }
     }
 }
