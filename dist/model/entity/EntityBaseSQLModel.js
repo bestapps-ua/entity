@@ -46,11 +46,19 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         if (filters && filters.join) {
             if (Array.isArray(filters.join)) {
                 for (let i = 0; i < filters.join.length; i++) {
-                    q += 'JOIN ' + this.escapeField(filters.join[i].table) + ' ';
+                    let j = filters.join[i].type || 'JOIN';
+                    q += `${j}` + this.escapeField(filters.join[i].table) + ' ';
                 }
             }
             else {
-                q += 'JOIN ' + this.escapeField(filters.join.table) + ' ';
+                let j = filters.join.type || 'JOIN';
+                q += `${j} ` + this.escapeField(filters.join.table) + ' ';
+                if (filters.join.on) {
+                    q += 'ON ';
+                    let res = this.processWhere(filters.join.on);
+                    values.push(res.values);
+                    q += `${res.names.join(' AND ')} `;
+                }
             }
         }
         let where = (filters && filters.where) || params.where;
@@ -91,7 +99,7 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
             if (Array.isArray(sort)) {
                 for (let i = 0; i < sort.length; i++) {
                     const srt = sort[i];
-                    query += `${this.escapeField(srt.field)}' ${srt.order}`;
+                    query += `${this.escapeField(srt.field)} ${srt.order}`;
                     if (i + 1 < sort.length) {
                         query += ', ';
                     }
@@ -101,7 +109,7 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
                 }
             }
             else {
-                query += `'${this.escapeField(sort.field)}' ${sort.order} `;
+                query += `${this.escapeField(sort.field)} ${sort.order} `;
             }
         }
         return query;

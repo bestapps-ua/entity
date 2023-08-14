@@ -1,7 +1,7 @@
 import IEntityItemsWhere from "./IEntityItemsWhere";
 interface IEntityItemsJoin {
     table: string;
-    type: 'inner';
+    type?: string;
     on?: IEntityItemsWhere | IEntityItemsWhere[];
 }
 export default IEntityItemsJoin;

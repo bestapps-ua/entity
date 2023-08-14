@@ -47,18 +47,18 @@ class Entity {
     get allData() {
         let properties = Object.getOwnPropertyNames(this);
         let data = {};
-        for (let i = 0; i < properties.length; i++) {
-            let property = properties[i];
-            property = property.substring(1);
+        (async () => {
+            for (let i = 0; i < properties.length; i++) {
+                let property = properties[i];
+                property = property.substring(1);
 
-            if (this[properties[i]] instanceof Entity) {
-                data[property] = this[properties[i]].allData;
-            } else {
-                data[property] = (async () => {
-                    await this[properties[i]];
-                });
+                if (this[properties[i]] instanceof Entity) {
+                    data[property] = this[properties[i]].allData;
+                } else {
+                    data[property] = await this[properties[i]];
+                }
             }
-        }
+        })();
         return data;
     }
 
@@ -73,7 +73,7 @@ class Entity {
     async getModifiedProperties() {
         let modified = [];
         for (const property in this.props) {
-            if(this.props[property] !== this[property]) {
+            if (this.props[property] !== this[property]) {
                 modified.push(property);
             }
         }

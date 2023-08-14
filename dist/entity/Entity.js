@@ -45,18 +45,18 @@ class Entity {
     get allData() {
         let properties = Object.getOwnPropertyNames(this);
         let data = {};
-        for (let i = 0; i < properties.length; i++) {
-            let property = properties[i];
-            property = property.substring(1);
-            if (this[properties[i]] instanceof Entity) {
-                data[property] = this[properties[i]].allData;
+        (() => __awaiter(this, void 0, void 0, function* () {
+            for (let i = 0; i < properties.length; i++) {
+                let property = properties[i];
+                property = property.substring(1);
+                if (this[properties[i]] instanceof Entity) {
+                    data[property] = this[properties[i]].allData;
+                }
+                else {
+                    data[property] = yield this[properties[i]];
+                }
             }
-            else {
-                data[property] = (() => __awaiter(this, void 0, void 0, function* () {
-                    yield this[properties[i]];
-                }));
-            }
-        }
+        }))();
         return data;
     }
     get uid() {

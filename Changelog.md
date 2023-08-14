@@ -1,3 +1,9 @@
+### Version 1.0.16
+
+Sort field fix
+JOIN field fix
+Entity allData fix
+
 ### Version 1.0.12
 1. Added in model:
 schema.callback - gives possibility to load external object (see test/model/MainModel.ts for spcialModel)
