@@ -578,7 +578,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                                 val = JSON.stringify(val);
                             }
                         }
-                        val = await this.beforeCreate(schema.field, val);
+                        val = await this.beforeCreate(entity, schema.field, val);
                         res({
                             field: fieldId,
                             value: val,
@@ -632,14 +632,14 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         })();
     }
 
-    protected async beforeCreate(field: string, value: any) {
+    protected async beforeCreate(entity: Entity, field: string, value: any) {
         if (!value) {
             if (field === this.specialFields.created.name) {
                 value = Date.now() / 1000;
             }
 
             if (field === this.specialFields.uid.name) {
-                value = await this.generateUidAsync();
+                value = await this.generateUidAsync(entity);
             }
         }
         return value;
@@ -648,20 +648,21 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
     /**
      *
+     * @param entity
      * @param callback
      */
-    generateUid(callback) {
+    generateUid(entity: Entity, callback) {
         let uid = uuid4();
         this.getByUid(uid, (err, user) => {
             if (err) return callback && callback(err);
-            if (user) return this.generateUid(callback);
+            if (user) return this.generateUid(entity, callback);
             callback && callback(undefined, uid);
         });
     }
 
-    async generateUidAsync(): Promise<Entity> {
+    async generateUidAsync(entity: Entity): Promise<Entity> {
         return new Promise((resolve, reject) => {
-            this.generateUid((err, uid) => {
+            this.generateUid(entity, (err, uid) => {
                 if (err) return reject(err);
                 resolve(uid);
             });

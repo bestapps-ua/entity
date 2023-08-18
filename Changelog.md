@@ -1,3 +1,8 @@
+### Version 1.0.17
+
+generateUid(callback) changed to generateUid(entity: Entity, callback) 
+to make possibility to override schema generation
+same is for generateUidAsync() to generateUidAsync(entity: Entity)
 ### Version 1.0.16
 
 Sort field fix
