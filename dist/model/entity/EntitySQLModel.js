@@ -567,7 +567,7 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                                     val = JSON.stringify(val);
                                 }
                             }
-                            val = yield this.beforeCreate(schema.field, val);
+                            val = yield this.beforeCreate(entity, schema.field, val);
                             res({
                                 field: fieldId,
                                 value: val,
@@ -623,14 +623,14 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             }
         }))();
     }
-    beforeCreate(field, value) {
+    beforeCreate(entity, field, value) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!value) {
                 if (field === this.specialFields.created.name) {
                     value = Date.now() / 1000;
                 }
                 if (field === this.specialFields.uid.name) {
-                    value = yield this.generateUidAsync();
+                    value = yield this.generateUidAsync(entity);
                 }
             }
             return value;
@@ -638,22 +638,23 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
     }
     /**
      *
+     * @param entity
      * @param callback
      */
-    generateUid(callback) {
+    generateUid(entity, callback) {
         let uid = uuid4();
         this.getByUid(uid, (err, user) => {
             if (err)
                 return callback && callback(err);
             if (user)
-                return this.generateUid(callback);
+                return this.generateUid(entity, callback);
             callback && callback(undefined, uid);
         });
     }
-    generateUidAsync() {
+    generateUidAsync(entity) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                this.generateUid((err, uid) => {
+                this.generateUid(entity, (err, uid) => {
                     if (err)
                         return reject(err);
                     resolve(uid);

@@ -1,4 +1,4 @@
-### Version 1.0.17
+### Version 1.0.18
 
 generateUid(callback) changed to generateUid(entity: Entity, callback) 
 to make possibility to override schema generation

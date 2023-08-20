@@ -68,13 +68,14 @@ declare class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLMod
     getEntityClassesNext(classes: any, models: any): void;
     createAsync(entity: Entity): Promise<Entity>;
     create(entity: Entity, callback: any): void;
-    protected beforeCreate(field: string, value: any): Promise<any>;
+    protected beforeCreate(entity: Entity, field: string, value: any): Promise<any>;
     /**
      *
+     * @param entity
      * @param callback
      */
-    generateUid(callback: any): void;
-    generateUidAsync(): Promise<Entity>;
+    generateUid(entity: Entity, callback: any): void;
+    generateUidAsync(entity: Entity): Promise<Entity>;
     findFieldSchema(id: string): IEntitySQLMakeScheme;
     updateAsync(entity: Entity): Promise<Entity>;
     update(entity: Entity, callback: any): void;
