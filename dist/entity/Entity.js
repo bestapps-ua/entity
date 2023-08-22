@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 class Entity {
     constructor(props) {
+        this.ignoredProperties = [];
         this._props = props;
         this._id = props.id;
         this._uid = props.uid;
@@ -69,7 +70,7 @@ class Entity {
         return __awaiter(this, void 0, void 0, function* () {
             let modified = [];
             for (const property in this.props) {
-                if (this.props[property] !== this[property]) {
+                if (!this.ignoredProperties.includes(property) && this.props[property] !== this[property]) {
                     modified.push(property);
                 }
             }

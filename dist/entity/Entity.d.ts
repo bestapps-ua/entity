@@ -4,6 +4,7 @@ declare class Entity {
     protected _created: number;
     protected _uid: string;
     protected _system: any;
+    ignoredProperties: any[];
     constructor(props: any);
     /**
      * For lazy load please use this method

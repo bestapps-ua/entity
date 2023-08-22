@@ -267,7 +267,15 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
         }
         Promise.all(p).then(() => {
             itemData.system.ttl = Date.now() - t1;
-            callback && callback(errors.length > 0 ? { data, errors } : undefined, itemData);
+            if (this.options.make && this.options.make.onAfter) {
+                this.options.make.onAfter(itemData, () => {
+                    itemData.system.ttl = Date.now() - t1;
+                    callback && callback(errors.length > 0 ? { data, errors } : undefined, itemData);
+                });
+            }
+            else {
+                callback && callback(errors.length > 0 ? { data, errors } : undefined, itemData);
+            }
         }).catch((err) => {
             itemData.system.ttl = Date.now() - t1;
             callback && callback({ data, errors: [{ error: err }] }, itemData);
@@ -643,6 +651,9 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
      */
     generateUid(entity, callback) {
         let uid = uuid4();
+        if (entity.uid) {
+            uid = entity.uid;
+        }
         this.getByUid(uid, (err, user) => {
             if (err)
                 return callback && callback(err);

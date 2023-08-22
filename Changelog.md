@@ -1,3 +1,11 @@
+### Version 1.0.19
+IEntitySQLModelOptions
+added make.onAfter - possible to fill data after make
+
+Entity:
+added ignoredProperties property to ignore in getModifiedProperties() call
+
+
 ### Version 1.0.18
 
 generateUid(callback) changed to generateUid(entity: Entity, callback) 

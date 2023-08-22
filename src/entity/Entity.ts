@@ -6,6 +6,8 @@ class Entity {
     protected _uid: string;
     protected _system: any;
 
+    public ignoredProperties = [];
+
     constructor(props) {
         this._props = props;
         this._id = props.id;
@@ -73,7 +75,7 @@ class Entity {
     async getModifiedProperties() {
         let modified = [];
         for (const property in this.props) {
-            if (this.props[property] !== this[property]) {
+            if (!this.ignoredProperties.includes(property) && this.props[property] !== this[property]) {
                 modified.push(property);
             }
         }
