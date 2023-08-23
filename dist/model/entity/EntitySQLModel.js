@@ -566,7 +566,7 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
                         try {
                             let val = yield entity[schema.field];
                             if (isSource) {
-                                if (val) {
+                                if (val && schema.source.model) {
                                     val = val.id;
                                 }
                             }
