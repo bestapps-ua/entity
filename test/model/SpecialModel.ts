@@ -4,6 +4,7 @@ import Special from "../entity/Special";
 
 let options: IEntitySQLModelOptions = {
     table: 'special',
+    //@ts-ignore
     entity: Special,
     schemas: [
         {
@@ -28,6 +29,7 @@ let specialModel = new SpecialModel(options);
 
 let optionsCut: IEntitySQLModelOptions = {
     table: 'special',
+    //@ts-ignore
     entity: Special,
     schemas: [
         {
