@@ -577,7 +577,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                     try {
                         let val = await entity[schema.field];
                         if (isSource) {
-                            if (val) {
+                            if (val && schema.source.model) {
                                 val = val.id;
                             }
                         } else {

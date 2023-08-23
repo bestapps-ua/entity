@@ -5,6 +5,7 @@ import Child from "../entity/Child";
 
 let options: IEntitySQLModelOptions = {
     table: 'child',
+    //@ts-ignore
     entity: Child,
     schemas: [
         {

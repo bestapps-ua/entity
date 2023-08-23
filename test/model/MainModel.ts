@@ -5,6 +5,7 @@ import {specialModel} from "./SpecialModel";
 
 let options: IEntitySQLModelOptions = {
     table: 'main',
+    //@ts-ignore
     entity: Main,
     schemas: [
         {
