@@ -281,7 +281,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         Promise.all(p).then(() => {
             itemData.system.ttl = Date.now() - t1;
             if (this.options.make && this.options.make.onAfter) {
-                this.options.make.onAfter(itemData, () => {
+                this.options.make.onAfter(data, itemData, () => {
                     itemData.system.ttl = Date.now() - t1;
                     callback && callback(errors.length > 0 ? {data, errors} : undefined, itemData);
                 });

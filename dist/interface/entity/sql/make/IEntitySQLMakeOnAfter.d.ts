@@ -1,5 +1,5 @@
 interface IEntitySQLMakeOnAfter {
-    (props: any, callback: Function): any;
+    (source: any, props: any, callback: Function): any;
 }
 export default IEntitySQLMakeOnAfter;
 //# sourceMappingURL=IEntitySQLMakeOnAfter.d.ts.map
