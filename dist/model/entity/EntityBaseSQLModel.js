@@ -65,7 +65,7 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         if (where) {
             q += 'WHERE ';
             let res = this.processWhere(where);
-            values.push(res.values);
+            values = values.concat(res.values);
             q += `${res.names.join(' AND ')} `;
         }
         return { q, values };

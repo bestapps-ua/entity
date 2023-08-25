@@ -1,3 +1,6 @@
+### Version 1.0.24
+Fix issues with WHERE filter
+
 ### Version 1.0.23
 createAsync  isSource fix
 
