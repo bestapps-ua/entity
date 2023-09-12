@@ -27,12 +27,14 @@ class EntityBaseSQLModel extends EntityCacheModel {
         if (Array.isArray(where)) {
             for (let i = 0; i < where.length; i++) {
                 const equal = where[i].equal ? where[i].equal : '=';
-                names.push(`${this.escapeField(where[i].key)} ${equal} ?`);
+                const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
+                names.push(`${this.escapeField(where[i].key)} ${equal} ${sign}`);
                 values.push(where[i].value);
             }
         } else {
             const equal = where.equal ? where.equal : '=';
-            names.push(`${this.escapeField(where.key)} ${equal} ?`);
+            const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
+            names.push(`${this.escapeField(where.key)} ${equal} ${sign}`);
             values.push(where.value);
         }
         return {

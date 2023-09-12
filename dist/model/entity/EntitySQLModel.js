@@ -442,7 +442,7 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
         query += this.processSort(params.sort);
         if (params.limit) {
             params.page = params.page || 1;
-            query += 'LIMIT ' + params.limit + ' OFFSET ' + (params.page * params.limit - params.limit);
+            query += `LIMIT ${(params.page * params.limit - params.limit)}, ${params.limit}`;
         }
         this.sql.query(query, values, (err, rows) => {
             if (params.native) {

@@ -1,3 +1,6 @@
+### Version 1.0.25
+Fix issues with LIMIT
+
 ### Version 1.0.24
 Fix issues with WHERE filter
 
