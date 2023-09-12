@@ -28,14 +28,23 @@ class EntityBaseSQLModel extends EntityCacheModel {
             for (let i = 0; i < where.length; i++) {
                 const equal = where[i].equal ? where[i].equal : '=';
                 const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-                names.push(`${this.escapeField(where[i].key)} ${equal} ${sign}`);
-                values.push(where[i].value);
+                if(where[i].value && where[i].value.toString().toLowerCase() === 'null') {
+                    names.push(`${this.escapeField(where[i].key)} ${equal} NULL`);
+                }else{
+                    names.push(`${this.escapeField(where[i].key)} ${equal} ${sign}`);
+                    values.push(where[i].value);
+                }
             }
         } else {
             const equal = where.equal ? where.equal : '=';
             const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-            names.push(`${this.escapeField(where.key)} ${equal} ${sign}`);
-            values.push(where.value);
+            if(where.value && where.value.toString().toLowerCase() === 'null') {
+                names.push(`${this.escapeField(where.key)} ${equal} NULL`);
+                values.push(where.value);
+            }else{
+                names.push(`${this.escapeField(where.key)} ${equal} ${sign}`);
+                values.push(where.value);
+            }
         }
         return {
             names,

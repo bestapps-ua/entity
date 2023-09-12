@@ -1,4 +1,4 @@
-### Version 1.0.25
+### Version 1.0.26
 Fix issues with LIMIT
 
 ### Version 1.0.24
