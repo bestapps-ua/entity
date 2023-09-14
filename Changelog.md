@@ -1,4 +1,4 @@
-### Version 1.0.28
+### Version 1.0.29
 Fix join - added field property
 
 ### Version 1.0.26

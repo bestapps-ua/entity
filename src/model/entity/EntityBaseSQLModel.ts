@@ -71,7 +71,9 @@ class EntityBaseSQLModel extends EntityCacheModel {
                 if (filters.join.on) {
                     q += 'ON ';
                     let res = this.processWhere(filters.join.on);
-                    values.push(res.values);
+                    if(res.values.length > 0) {
+                        values.push(res.values);
+                    }
                     q += `${res.names.join(' AND ')} `;
                 }
             }
