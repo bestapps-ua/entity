@@ -1,3 +1,6 @@
+### Version 1.0.27
+Fix join - added field property
+
 ### Version 1.0.26
 Fix issues with LIMIT
 

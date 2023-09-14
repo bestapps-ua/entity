@@ -20,32 +20,30 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         return f.join('.');
     }
     processWhere(where) {
+        function prepare(me, where) {
+            const equal = where.equal ? where.equal : '=';
+            const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
+            if (where.value && where.value.toString().toLowerCase() === 'null') {
+                names.push(`${me.escapeField(where.key)} ${equal} NULL`);
+                values.push(where.value);
+            }
+            else {
+                names.push(`${me.escapeField(where.key)} ${equal} ${sign}`);
+                values.push(where.value);
+            }
+            if (where.field) {
+                names.push(`${me.escapeField(where.key)} ${equal} ${me.escapeField(where.field)}`);
+            }
+        }
         let names = [];
         let values = [];
         if (Array.isArray(where)) {
             for (let i = 0; i < where.length; i++) {
-                const equal = where[i].equal ? where[i].equal : '=';
-                const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-                if (where[i].value && where[i].value.toString().toLowerCase() === 'null') {
-                    names.push(`${this.escapeField(where[i].key)} ${equal} NULL`);
-                }
-                else {
-                    names.push(`${this.escapeField(where[i].key)} ${equal} ${sign}`);
-                    values.push(where[i].value);
-                }
+                prepare(this, where[i]);
             }
         }
         else {
-            const equal = where.equal ? where.equal : '=';
-            const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-            if (where.value && where.value.toString().toLowerCase() === 'null') {
-                names.push(`${this.escapeField(where.key)} ${equal} NULL`);
-                values.push(where.value);
-            }
-            else {
-                names.push(`${this.escapeField(where.key)} ${equal} ${sign}`);
-                values.push(where.value);
-            }
+            prepare(this, where);
         }
         return {
             names,

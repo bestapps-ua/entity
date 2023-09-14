@@ -22,29 +22,29 @@ class EntityBaseSQLModel extends EntityCacheModel {
     }
 
     protected processWhere(where: IEntityItemsWhere | IEntityItemsWhere[]) {
+        function prepare(me, where: IEntityItemsWhere) {
+            const equal = where.equal ? where.equal : '=';
+            const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
+            if (where.value && where.value.toString().toLowerCase() === 'null') {
+                names.push(`${me.escapeField(where.key)} ${equal} NULL`);
+                values.push(where.value);
+            } else {
+                names.push(`${me.escapeField(where.key)} ${equal} ${sign}`);
+                values.push(where.value);
+            }
+            if (where.field) {
+                names.push(`${me.escapeField(where.key)} ${equal} ${me.escapeField(where.field)}`);
+            }
+        }
+
         let names = [];
         let values = [];
         if (Array.isArray(where)) {
             for (let i = 0; i < where.length; i++) {
-                const equal = where[i].equal ? where[i].equal : '=';
-                const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-                if(where[i].value && where[i].value.toString().toLowerCase() === 'null') {
-                    names.push(`${this.escapeField(where[i].key)} ${equal} NULL`);
-                }else{
-                    names.push(`${this.escapeField(where[i].key)} ${equal} ${sign}`);
-                    values.push(where[i].value);
-                }
+                prepare(this, where[i]);
             }
         } else {
-            const equal = where.equal ? where.equal : '=';
-            const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-            if(where.value && where.value.toString().toLowerCase() === 'null') {
-                names.push(`${this.escapeField(where.key)} ${equal} NULL`);
-                values.push(where.value);
-            }else{
-                names.push(`${this.escapeField(where.key)} ${equal} ${sign}`);
-                values.push(where.value);
-            }
+            prepare(this, where);
         }
         return {
             names,
@@ -65,7 +65,7 @@ class EntityBaseSQLModel extends EntityCacheModel {
             } else {
                 let j = filters.join.type || 'JOIN';
                 q += `${j} ` + this.escapeField(filters.join.table) + ' ';
-                if(filters.join.on) {
+                if (filters.join.on) {
                     q += 'ON ';
                     let res = this.processWhere(filters.join.on);
                     values.push(res.values);
