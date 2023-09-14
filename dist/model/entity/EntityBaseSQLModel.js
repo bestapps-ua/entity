@@ -23,13 +23,15 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         function prepare(me, where) {
             const equal = where.equal ? where.equal : '=';
             const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
-            if (where.value && where.value.toString().toLowerCase() === 'null') {
-                names.push(`${me.escapeField(where.key)} ${equal} NULL`);
-                values.push(where.value);
-            }
-            else {
-                names.push(`${me.escapeField(where.key)} ${equal} ${sign}`);
-                values.push(where.value);
+            if (where.value) {
+                if (where.value.toString().toLowerCase() === 'null') {
+                    names.push(`${me.escapeField(where.key)} ${equal} NULL`);
+                    values.push(where.value);
+                }
+                else {
+                    names.push(`${me.escapeField(where.key)} ${equal} ${sign}`);
+                    values.push(where.value);
+                }
             }
             if (where.field) {
                 names.push(`${me.escapeField(where.key)} ${equal} ${me.escapeField(where.field)}`);
