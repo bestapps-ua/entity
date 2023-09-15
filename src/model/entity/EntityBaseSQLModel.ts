@@ -26,9 +26,12 @@ class EntityBaseSQLModel extends EntityCacheModel {
             const equal = where.equal ? where.equal : '=';
             const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
             if (where.value || where.value === null) {
-                if (where.value === null || where.value.toString().toLowerCase() === 'null') {
-                    names.push(`${me.escapeField(where.key)} ${equal} NULL`);
-                    values.push(where.value);
+                if (
+                    where.value === null ||
+                    where.value.toString().toLowerCase() === 'null' ||
+                    where.value.toString().toLowerCase() === 'not null'
+                ) {
+                    names.push(`${me.escapeField(where.key)} ${equal} ${where.value}`);
                 } else {
                     names.push(`${me.escapeField(where.key)} ${equal} ${sign}`);
                     values.push(where.value);
