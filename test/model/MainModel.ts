@@ -32,6 +32,10 @@ let options: IEntitySQLModelOptions = {
             field: 'name'
         },
         {
+            field: 'some',
+            optional: true,
+        },
+        {
             field: 'data',
             type: 'json',
         },

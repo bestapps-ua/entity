@@ -1,5 +1,6 @@
 import Entity from "../../src/entity/Entity";
 import Special from "./Special";
+import Child from "./Child";
 
 class Main extends Entity {
 
@@ -7,12 +8,17 @@ class Main extends Entity {
     private _parent: Main;
     private _data: any;
     private _special: Special;
+    //Using only for tests
+    private _child: Child;
+    private _some: string;
 
     constructor(props) {
         super(props);
         this._name = props.name;
         this._parent = props.parent;
         this._special = props.special;
+        this._some = props.some;
+        this._child = props.child;
         this._data = props.data;
     }
 
@@ -46,6 +52,21 @@ class Main extends Entity {
         this._special = value;
     }
 
+    get some(): string {
+        return this._some;
+    }
+
+    set some(value: string) {
+        this._some = value;
+    }
+
+    get child(): Child {
+        return this._child;
+    }
+
+    set child(value: Child) {
+        this._child = value;
+    }
 }
 
 export default Main;

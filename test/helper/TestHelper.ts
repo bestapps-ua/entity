@@ -8,6 +8,7 @@ appModel.init();
 export class TestHelper {
     isLoaded: boolean = false;
     constructor() {
+        this.beforeEach();
         this.beforeAll();
         this.afterAll();
     }
@@ -44,6 +45,17 @@ export class TestHelper {
                     done();
                 }
             });
+        });
+    }
+
+    beforeEach(callback = undefined) {
+
+        beforeEach(done => {
+            if (callback) {
+                callback(done)
+            } else {
+                done();
+            }
         });
     }
 }

@@ -12,8 +12,12 @@ class ChildEntityHelper {
             name: `test${uuid4()}`,
             main: undefined,
         }
-        let main = await mainEntityHelper.create();
-        source.main = main;
+        if(options.main) {
+            source.main = options.main;
+        }else{
+            let main = await mainEntityHelper.create();
+            source.main = main;
+        }
         const entity = new Child(source);
         return entity;
     }

@@ -2,18 +2,22 @@ import Main from "../entity/Main";
 import mainModel from "../model/MainModel";
 import specialEntityHelper from "./SpecialEntityHelper";
 import {checkUid} from "../tools";
+import childEntityHelper from "./ChildEntityHelper";
 
 let uuid4 = require('uuid/v4');
 
 class MainEntityHelper {
 
     async generate(options: any = {}): Promise<Main> {
-        let source = {
+        let source: any = {
             name: `test${uuid4()}`,
             data: {
                 item: 1,
                 hello: 'world',
             }
+        }
+        if(options.some) {
+            source.some = options.some;
         }
         const entity = new Main(source);
         if (options.withParent) {
@@ -29,8 +33,8 @@ class MainEntityHelper {
             entity.special = special;
         }
         if(options.withChild) {
-            let special = await specialEntityHelper.create();
-            entity.special = special;
+            let child = await childEntityHelper.create();
+            entity.child = child;
         }
         return entity;
     }
@@ -59,6 +63,9 @@ class MainEntityHelper {
 
     async create(options: any = {}): Promise<Main> {
         const entity = await this.generate(options);
+        if(options.withChild) {
+            return await entity.child.main;
+        }
         let data = await mainModel.createAsync(entity) as Main;
         return data;
     }

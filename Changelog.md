@@ -1,3 +1,6 @@
+### Version 1.0.32
+Function in WHERE filter
+
 ### Version 1.0.31
 Fix join - added field property
 
