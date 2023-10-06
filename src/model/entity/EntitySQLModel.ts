@@ -452,7 +452,6 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             params.page = params.page || 1;
             query += `LIMIT ${(params.page * params.limit - params.limit)}, ${params.limit}`;
         }
-
         this.sql.query(query, values, (err, rows) => {
             if (params.native) {
                 return callback && callback(err, rows);
@@ -523,8 +522,8 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
 
     async truncate() {
         return new Promise((resolve, reject) => {
-            let q = `TRUNCATE ${this.tableEscaped}`;
-            this.sql.query(q, undefined, async () => {
+            let q = `DELETE FROM ${this.tableEscaped}`;
+            this.sql.query(q, undefined, async (err, rows) => {
                 await this.invalidateAll();
                 resolve(undefined);
             });

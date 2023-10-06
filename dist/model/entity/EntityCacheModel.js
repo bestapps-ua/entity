@@ -102,7 +102,9 @@ class EntityCacheModel extends EntityModel_1.default {
     }
     invalidateAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.cache.model.invalidateAll();
+            if (this.cache.model) {
+                return yield this.cache.model.invalidateAll();
+            }
         });
     }
     getCachedMaybe(id, callback = undefined) {

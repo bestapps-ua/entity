@@ -1,8 +1,9 @@
+import IEntityItemsWhereFuncItem from "./IEntityItemsWhereFuncItem";
 interface IEntityItemsWhere {
-    key: string;
-    value?: string | number | any[];
+    key?: string | IEntityItemsWhereFuncItem;
+    value?: string | number | any[] | IEntityItemsWhereFuncItem | IEntityItemsWhereFuncItem[];
     equal?: string;
-    field?: string;
+    field?: string | IEntityItemsWhereFuncItem | IEntityItemsWhereFuncItem[];
 }
 export default IEntityItemsWhere;
 //# sourceMappingURL=IEntityItemsWhere.d.ts.map

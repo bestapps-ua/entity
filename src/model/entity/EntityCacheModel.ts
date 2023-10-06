@@ -93,7 +93,9 @@ class EntityCacheModel extends EntityModel {
     }
 
     async invalidateAll() {
-        return await this.cache.model.invalidateAll();
+        if(this.cache.model) {
+            return await this.cache.model.invalidateAll();
+        }
     }
 
     async getCachedMaybe(id, callback: Function = undefined) {

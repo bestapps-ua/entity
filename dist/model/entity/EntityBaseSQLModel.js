@@ -20,23 +20,102 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         return f.join('.');
     }
     processWhere(where) {
+        function prepareValue(me, where, sign) {
+            let s = sign;
+            if (typeof where.value !== 'object' || Array.isArray(where.value)) {
+                values.push(where.value);
+            }
+            else {
+                let res = prepareObj(me, where.value);
+                s = ` ${res.data}`;
+                if (res.values.length > 0) {
+                    values = values.concat(res.values);
+                }
+            }
+            return s;
+        }
+        function prepareKey(me, where) {
+            let res = prepareObj(me, where.key);
+            let key = `${res.data}`;
+            if (res.values.length > 0) {
+                values = values.concat(res.values);
+            }
+            return key;
+        }
         function prepare(me, where) {
-            const equal = where.equal ? where.equal : '=';
+            let equal = where.equal ? where.equal : '=';
             const sign = equal.toLowerCase() === 'in' ? '(?)' : '?';
             if (where.value || where.value === null) {
                 if (where.value === null ||
                     where.value.toString().toLowerCase() === 'null' ||
                     where.value.toString().toLowerCase() === 'not null') {
-                    names.push(`${me.escapeField(where.key)} ${equal} ${where.value}`);
+                    equal = where.equal ? equal : 'IS';
+                    let name = `${equal} ${where.value}`;
+                    if (typeof where.key === 'object') {
+                        let key = prepareKey(me, where);
+                        name = `${key} ${name}`;
+                    }
+                    else {
+                        name = `${me.escapeField(where.key)} ${name}`;
+                    }
+                    names.push(name);
+                }
+                else if (typeof where.key !== 'object') {
+                    let signChanged = prepareValue(me, where, sign);
+                    let name = `${me.escapeField(where.key)} ${equal} ${signChanged}`;
+                    names.push(name);
                 }
                 else {
-                    names.push(`${me.escapeField(where.key)} ${equal} ${sign}`);
-                    values.push(where.value);
+                    let name = `${equal}`;
+                    name = `${prepareKey(me, where)} ${name}`;
+                    //values.push(where.value);
+                    let signChanged = prepareValue(me, where, sign);
+                    name = `${name} ${signChanged}`;
+                    names.push(name);
                 }
             }
             if (where.field) {
-                names.push(`${me.escapeField(where.key)} ${equal} ${me.escapeField(where.field)}`);
+                let name = `${equal} ${me.escapeField(where.field)}`;
+                if (typeof where.key === 'object') {
+                    name = `${prepareKey(me, where)} ${name}`;
+                }
+                else {
+                    name = `${me.escapeField(where.key)} ${name}`;
+                }
+                names.push(name);
             }
+        }
+        function prepareObj(me, data) {
+            let vals = [];
+            if (typeof data === 'string') {
+                return {
+                    data,
+                    values: vals,
+                };
+            }
+            if (data.type === 'function') {
+                return prepareFunc(me, data.data);
+            }
+            throw `not found type ${data.type}`;
+        }
+        function prepareFunc(me, funcData) {
+            let func = '';
+            let vals = [];
+            func = funcData.schema;
+            let fields = Array.isArray(funcData.field) ? funcData.field : [funcData.field];
+            for (const field of fields) {
+                if (field.key) {
+                    func = func.replace(new RegExp(`\:${field.key.schema}`, 'g'), me.escapeField(field.key.value));
+                }
+                if (field.value) {
+                    func = func.replace(new RegExp(`\:${field.value.schema}`, 'g'), '?');
+                    vals.push(field.value.value);
+                }
+            }
+            return {
+                data: func,
+                values: vals,
+            };
         }
         let names = [];
         let values = [];

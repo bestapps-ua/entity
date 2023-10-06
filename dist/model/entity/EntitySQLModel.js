@@ -511,8 +511,8 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
     truncate() {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                let q = `TRUNCATE ${this.tableEscaped}`;
-                this.sql.query(q, undefined, () => __awaiter(this, void 0, void 0, function* () {
+                let q = `DELETE FROM ${this.tableEscaped}`;
+                this.sql.query(q, undefined, (err, rows) => __awaiter(this, void 0, void 0, function* () {
                     yield this.invalidateAll();
                     resolve(undefined);
                 }));
