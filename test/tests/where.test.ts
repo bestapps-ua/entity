@@ -239,14 +239,7 @@ describe('Where', () => {
                             key: 'child.name',
                             equal: 'LIKE',
                             value: '%test%',
-                        },
-                        /*
-                        {
-                            key: 'child.main_id',
-                            field: 'main.id',
-                        },
-
-                         */
+                        }
                     ]
                 }
             }
@@ -275,4 +268,5 @@ describe('Where', () => {
         let res = await mainModel.getItemsAsync(params);
         expect(res.length).toBe(5);
     });
+
 });
