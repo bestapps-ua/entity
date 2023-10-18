@@ -327,20 +327,23 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         if (err) {
             return callback && callback(err, []);
         }
+
         if (!rows || rows.length === 0) return callback && callback(undefined, []);
         let p = [];
         for (let i = 0; i < rows.length; i++) {
             p.push(new Promise((resolve, reject) => {
                 this.get(rows[i].id, (err, item) => {
-                    if (!item) return reject(err);
+                    if (!item) return reject(err || `${rows[i].id} not found`);
                     resolve(item);
                 });
             }));
         }
 
         Promise.all(p).then((items: [Entity]) => {
+            //console.log(items);
             callback && callback(undefined, items);
         }).catch((err) => {
+            console.log('err makeList', err);
             callback && callback(err, []);
         });
     }
@@ -440,23 +443,46 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
     getItems(params: IEntityItemsParams, callback: IEntitySQLMakeListResponse) {
         params.sort = params.sort || {field: this.escapeField(this.table + '.id'), order: 'ASC'};
         params.select = params.select || `${this.tableEscaped}.*`;
-        let query = this.processSelect(params.select) + ' ';
+        let query = '';
+        let values = [];
+        let res: any = this.processSelect(this.tableEscaped, params.select);
+        query += res.query + ' ';
+        if(res.values.length > 0) {
+            values = values.concat(res.values);
+        }
         query += `FROM ${this.tableEscaped} `;
-        let {q, values} = this.processFilters(params);
-        query += q;
+        res = this.processFilters(params);
+        query += res.q + ' ';
+        if(res.values.length > 0) {
+            values = values.concat(res.values);
+        }
 
         query += this.processGroup(params.group);
-        query += this.processSort(params.sort);
+        res = this.processSort(params.sort);
+        query += res.query;
+        if(res.values.length > 0) {
+            values = values.concat(res.values);
+        }
 
         if (params.limit) {
             params.page = params.page || 1;
             query += `LIMIT ${(params.page * params.limit - params.limit)}, ${params.limit}`;
         }
+        //TODO: return RESULT SQL and VALUES for better debug!
+        //console.log(query, values);
         this.sql.query(query, values, (err, rows) => {
-            if (params.native) {
-                return callback && callback(err, rows);
+            let e;
+            if(err) {
+                e = {
+                    err,
+                    query,
+                    values,
+                };
             }
-            this.makeList(err, rows, callback);
+            if (params.native) {
+                return callback && callback(e, rows);
+            }
+            this.makeListOnly(e, rows, callback);
         });
     }
 
@@ -479,7 +505,6 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         `;
         let {q, values} = this.processFilters(params);
         query += q;
-
         query += this.processGroup(params.group);
 
         query += `LIMIT 1`;

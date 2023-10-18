@@ -1,10 +1,10 @@
-import IEntityItemsWhereFuncItem from "./IEntityItemsWhereFuncItem";
+import IEntityItemsFunction from "./function/IEntityItemsFunction";
 
 interface IEntityItemsWhere {
-    key?: string | IEntityItemsWhereFuncItem;
-    value?: string | number | any[] | IEntityItemsWhereFuncItem | IEntityItemsWhereFuncItem[];
+    key?: string | IEntityItemsFunction;
+    value?: string | number | any[] | IEntityItemsFunction | IEntityItemsFunction[];
     equal?: string;
-    field?: string | IEntityItemsWhereFuncItem | IEntityItemsWhereFuncItem[];
+    field?: string | IEntityItemsFunction | IEntityItemsFunction[];
 }
 
 export default IEntityItemsWhere;

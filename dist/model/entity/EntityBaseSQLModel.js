@@ -94,28 +94,9 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
                 };
             }
             if (data.type === 'function') {
-                return prepareFunc(me, data.data);
+                return me.processFunction(data);
             }
             throw `not found type ${data.type}`;
-        }
-        function prepareFunc(me, funcData) {
-            let func = '';
-            let vals = [];
-            func = funcData.schema;
-            let fields = Array.isArray(funcData.field) ? funcData.field : [funcData.field];
-            for (const field of fields) {
-                if (field.key) {
-                    func = func.replace(new RegExp(`\:${field.key.schema}`, 'g'), me.escapeField(field.key.value));
-                }
-                if (field.value) {
-                    func = func.replace(new RegExp(`\:${field.value.schema}`, 'g'), '?');
-                    vals.push(field.value.value);
-                }
-            }
-            return {
-                data: func,
-                values: vals,
-            };
         }
         let names = [];
         let values = [];
@@ -150,7 +131,7 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
                     q += 'ON ';
                     let res = this.processWhere(filters.join.on);
                     if (res.values.length > 0) {
-                        values.push(res.values);
+                        values = values.concat(res.values);
                     }
                     q += `${res.names.join(' AND ')} `;
                 }
@@ -187,14 +168,39 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         }
         return q;
     }
+    processFunction(funcData) {
+        let func = '';
+        let vals = [];
+        let data = funcData.data;
+        if (typeof data === 'string') {
+            return {
+                data,
+                values: vals,
+            };
+        }
+        func = data.schema;
+        let fields = Array.isArray(data.field) ? data.field : [data.field];
+        for (const field of fields) {
+            if (field.key) {
+                func = func.replace(new RegExp(`\:${field.key.schema}`, 'g'), this.escapeField(field.key.value));
+            }
+            if (field.value) {
+                func = func.replace(new RegExp(`\:${field.value.schema}`, 'g'), '?');
+                vals.push(field.value.value);
+            }
+        }
+        return {
+            data: func,
+            values: vals,
+        };
+    }
     processSort(sort) {
-        let query = '';
-        if (sort) {
-            query += 'ORDER BY ';
-            if (Array.isArray(sort)) {
-                for (let i = 0; i < sort.length; i++) {
-                    const srt = sort[i];
-                    query += `${this.escapeField(srt.field)} ${srt.order}`;
+        let values = [];
+        function make(me, sort) {
+            for (let i = 0; i < sort.length; i++) {
+                const srt = sort[i];
+                if (typeof srt.field === 'string') {
+                    query += `${me.escapeField(srt.field)} ${srt.order}`;
                     if (i + 1 < sort.length) {
                         query += ', ';
                     }
@@ -202,20 +208,80 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
                         query += ' ';
                     }
                 }
-            }
-            else {
-                query += `${this.escapeField(sort.field)} ${sort.order} `;
+                else {
+                    let fields = Array.isArray(srt.field) ? srt.field : [srt.field];
+                    for (let j = 0; j < fields.length; j++) {
+                        const field = fields[j];
+                        if (field.type === 'function') {
+                            let res = me.processFunction(field);
+                            query += `${res.data} ${srt.order}`;
+                            if (i + 1 < sort.length) {
+                                query += ', ';
+                            }
+                            else {
+                                query += ' ';
+                            }
+                            if (res.values.length > 0) {
+                                values = values.concat(res.values);
+                            }
+                        }
+                    }
+                }
             }
         }
-        return query;
+        let query = '';
+        if (sort) {
+            query += 'ORDER BY ';
+            if (!Array.isArray(sort)) {
+                sort = [sort];
+            }
+            make(this, sort);
+        }
+        return {
+            query,
+            values,
+        };
     }
-    processSelect(select) {
+    /**
+     * Example: 'SELECT *, HMM, IF(true, lol, hmm), zzz ' or Array of string|IEntityItemsFunction;
+     * TODO: parse functions in string - so make this as magick!!!
+     * @param table
+     * @param select
+     * @protected
+     */
+    processSelect(table, select) {
+        let values = [];
         let query = 'SELECT ';
-        if (Array.isArray(select)) {
+        if (typeof select === 'string') {
+            let sel = [`${table}.*`];
+            if (select.indexOf('select') === 0) {
+                select = select.substring(7).trim();
+            }
+            if (select.indexOf('*') === 0) {
+                select = select.substring(1).trim();
+            }
+            select = select.trim();
+            let bracket = 0;
+            let from = 0;
+            let len = 0;
             for (let i = 0; i < select.length; i++) {
-                const s = select[i];
-                query += `${this.escapeField(s)} `;
-                if (i + 1 < select.length) {
+                if (select[i] === '(') {
+                    bracket++;
+                }
+                if (select[i] === ')') {
+                    bracket--;
+                }
+                if (select[i] === ',' && bracket === 0) {
+                    sel.push(select.substring(from, len).trim());
+                    from = i;
+                    len = 0;
+                }
+                len++;
+            }
+            for (let i = 0; i < sel.length; i++) {
+                const s = sel[i];
+                query += `${this.escapeField(s)}`;
+                if (i + 1 < sel.length) {
                     query += ', ';
                 }
                 else {
@@ -224,9 +290,47 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
             }
         }
         else {
-            query += `${this.escapeField(select)} `;
+            if (!Array.isArray(select)) {
+                select = [select];
+            }
+            for (let i = 0; i < select.length; i++) {
+                const s = select[i];
+                let isAll = false;
+                if (s === '*') {
+                    query += `${table}.*`;
+                    isAll = true;
+                }
+                if (i === 0 && !isAll &&
+                    ((typeof s === 'string' && !s.includes('*')) ||
+                        typeof s !== 'string')) {
+                    query += `${table}.*, `;
+                }
+                if (!isAll) {
+                    if (typeof s === 'string') {
+                        query += `${this.escapeField(s)}`;
+                    }
+                    else {
+                        if (s.type === 'function') {
+                            let res = this.processFunction(s);
+                            query += res.data;
+                            if (res.values.length > 0) {
+                                values = values.concat(res.values);
+                            }
+                        }
+                    }
+                }
+                if (i + 1 < select.length) {
+                    query += ', ';
+                }
+                else {
+                    query += ' ';
+                }
+            }
         }
-        return query;
+        return {
+            query,
+            values,
+        };
     }
 }
 exports.default = EntityBaseSQLModel;

@@ -1,4 +1,4 @@
-interface IEntityItemsWhereFuncFieldItem {
+interface IEntityItemsFunctionField {
     key?: {
         schema: string;
         value: string;
@@ -9,4 +9,4 @@ interface IEntityItemsWhereFuncFieldItem {
     };
 }
 
-export default IEntityItemsWhereFuncFieldItem;
+export default IEntityItemsFunctionField;

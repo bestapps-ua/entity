@@ -1,5 +1,7 @@
+import IEntityItemsFunction from "./function/IEntityItemsFunction";
+
 interface IEntityItemsSort {
-    field: string;
+    field: string | IEntityItemsFunction | IEntityItemsFunction[];
     order: string;
 }
 

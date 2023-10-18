@@ -11,7 +11,7 @@
     },
     "typings": "dist/index.d.ts",
     "main": "dist/index.js",
-    "version": "1.0.32",
+    "version": "1.0.33",
     "dependencies": {
         "@bestapps/raks-sql": "1.0.15",
         "@types/jest": "^25.2.3",
@@ -32,9 +32,8 @@
         "tsc": "tsc",
         "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
         "build": "tsc --skipLibCheck && node ./dist/index.js",
-        "test": "NODE_ENV= jest",
-        "unit": "npm run test --runInBand --detectOpenHandles --forceExit",
-        "unitScript": "npm run test --runInBand --detectOpenHandles --forceExit -- "
+        "test": "NODE_ENV= jest --runInBand --detectOpenHandles --forceExit",
+        "unit": "npm run test"
     },
     "keywords": [
         "sql",

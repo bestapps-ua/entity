@@ -1,8 +1,9 @@
 import IEntityItemsFilter from "./IEntityItemsFilter";
 import IEntityItemsSort from "./IEntityItemsSort";
 import IEntityItemsWhere from "./IEntityItemsWhere";
+import IEntityItemsFunction from "./function/IEntityItemsFunction";
 interface IEntityItemsParams {
-    select?: string | string[];
+    select?: string | IEntityItemsFunction | ((string | IEntityItemsFunction)[]);
     filters?: IEntityItemsFilter;
     page?: number;
     limit?: number;
