@@ -174,6 +174,18 @@ class EntityBaseSQLModel extends EntityCacheModel {
         return q;
     }
 
+    protected processHaving(having: IEntityItemsWhere | IEntityItemsWhere[]) {
+        let q = '';
+        let values = [];
+        if (having) {
+            q += 'HAVING ';
+            let res = this.processWhere(having);
+            values = values.concat(res.values);
+            q += `${res.names.join(' AND ')} `;
+        }
+        return {q, values};
+    }
+
     protected processFunction(funcData: IEntityItemsFunction) {
         let func = '';
         let vals = [];

@@ -168,6 +168,17 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         }
         return q;
     }
+    processHaving(having) {
+        let q = '';
+        let values = [];
+        if (having) {
+            q += 'HAVING ';
+            let res = this.processWhere(having);
+            values = values.concat(res.values);
+            q += `${res.names.join(' AND ')} `;
+        }
+        return { q, values };
+    }
     processFunction(funcData) {
         let func = '';
         let vals = [];

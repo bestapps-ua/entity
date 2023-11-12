@@ -450,6 +450,11 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             values = values.concat(res.values);
         }
         query += this.processGroup(params.group);
+        res = this.processHaving(params.having);
+        query += res.q + ' ';
+        if (res.values.length > 0) {
+            values = values.concat(res.values);
+        }
         res = this.processSort(params.sort);
         query += res.query;
         if (res.values.length > 0) {
@@ -495,6 +500,11 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
         let { q, values } = this.processFilters(params);
         query += q;
         query += this.processGroup(params.group);
+        let res = this.processHaving(params.having);
+        query += res.q + ' ';
+        if (res.values.length > 0) {
+            values = values.concat(res.values);
+        }
         query += `LIMIT 1`;
         this.sql.getOne(query, values, (err, row) => {
             let cnt = 0;

@@ -14,6 +14,10 @@ declare class EntityBaseSQLModel extends EntityCacheModel {
         values: any[];
     };
     protected processGroup(group: string | string[]): string;
+    protected processHaving(having: IEntityItemsWhere | IEntityItemsWhere[]): {
+        q: string;
+        values: any[];
+    };
     protected processFunction(funcData: IEntityItemsFunction): {
         data: string;
         values: any[];

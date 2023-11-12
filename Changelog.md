@@ -1,3 +1,6 @@
+### Version 1.0.34
+Added HAVING
+
 ### Version 1.0.33
 Improve in SELECT and SORT
 

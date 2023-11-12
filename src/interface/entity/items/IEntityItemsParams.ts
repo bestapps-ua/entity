@@ -12,6 +12,7 @@ interface IEntityItemsParams {
     group?: string | string[];
     native?: boolean;
     where?: IEntityItemsWhere|IEntityItemsWhere[]
+    having?: IEntityItemsWhere|IEntityItemsWhere[]
 }
 
 export default IEntityItemsParams;
