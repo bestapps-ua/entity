@@ -1,3 +1,6 @@
+### Version 1.0.35
+Added BETWEEN
+
 ### Version 1.0.34
 Added HAVING
 

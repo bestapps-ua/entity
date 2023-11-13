@@ -61,14 +61,20 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
                     names.push(name);
                 }
                 else if (typeof where.key !== 'object') {
-                    let signChanged = prepareValue(me, where, sign);
-                    let name = `${me.escapeField(where.key)} ${equal} ${signChanged}`;
-                    names.push(name);
+                    if (where.equal && where.equal.toLowerCase() === 'between') {
+                        let name = `${me.escapeField(where.key)} ${equal} ? AND ?`;
+                        values = values.concat(where.value);
+                        names.push(name);
+                    }
+                    else {
+                        let signChanged = prepareValue(me, where, sign);
+                        let name = `${me.escapeField(where.key)} ${equal} ${signChanged}`;
+                        names.push(name);
+                    }
                 }
                 else {
                     let name = `${equal}`;
                     name = `${prepareKey(me, where)} ${name}`;
-                    //values.push(where.value);
                     let signChanged = prepareValue(me, where, sign);
                     name = `${name} ${signChanged}`;
                     names.push(name);

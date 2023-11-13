@@ -72,8 +72,11 @@ async function createList(options: any = {}) {
     return items;
 }
 
-async function check(where: IEntityItemsWhere | IEntityItemsWhere[], limit: number) {
+async function check(where: IEntityItemsWhere | IEntityItemsWhere[], limit: number, isSpecial = false) {
     let res = await mainModel.getItemsAsync({where});
+    if(isSpecial){
+        console.log(res);
+    }
     expect(res.length).toBe(limit);
     return res;
 }
@@ -223,6 +226,21 @@ describe('Where', () => {
             }
         };
         await check(where, 5);
+    });
+
+    it('Between ? and ?', async () => {
+        await testWhereHelper.prepare();
+        await createList({some: {limit: 1, value: 1}});
+        await createList({some: {limit: 1, value: 2}});
+        await createList({some: {limit: 1, value: 3}});
+        let where = [
+            {
+                key: 'some',
+                equal: 'between',
+                value: [2, 3],
+            }
+        ];
+        await check(where, 2);
     });
 
     it('LEFT JOIN with Key = Value', async () => {
