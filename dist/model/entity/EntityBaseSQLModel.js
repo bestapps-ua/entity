@@ -144,7 +144,7 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
             }
         }
         let where = (filters && filters.where) || params.where;
-        if (where) {
+        if (where && ((Array.isArray(where) && where.length > 0) || !Array.isArray(where))) {
             q += 'WHERE ';
             let res = this.processWhere(where);
             values = values.concat(res.values);
