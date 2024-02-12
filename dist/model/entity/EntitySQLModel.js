@@ -38,6 +38,8 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             this.autoFindFields();
         }));
     }
+    init() {
+    }
     _fillDefault() {
         const fields = [
             {

@@ -24,6 +24,7 @@ declare class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLMod
         };
     };
     constructor(options: IEntitySQLModelOptions);
+    init(): void;
     private _fillDefault;
     private autoFindFields;
     get table(): string;
