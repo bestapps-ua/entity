@@ -8,6 +8,7 @@ interface IEntitySQLModel {
     get(id: string | number, callback);
     getAsync(id: string | number): Promise<Entity>;
     getEntityClassesNext(classes: [Entity], models: any);
+    init();
 }
 
 export default IEntitySQLModel;

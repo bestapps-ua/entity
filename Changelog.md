@@ -1,3 +1,6 @@
+### version 1.0.39
+Added init method in EntitySQLModel
+
 ### Version 1.0.37
 Where fix
 
