@@ -45,13 +45,14 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
         this.table = options.table;
         this.options.schemas = this.options.schemas || [];
         this._fillDefault();
-    }
-
-    init() {
         globalEventModel.getEmitter().on(EVENT_SQL_CONNECTED, async () => {
             globalEventModel.getEmitter().emit(EVENT_SQL_MODEL_LOADING, {model: this});
             this.autoFindFields();
         });
+    }
+
+    init() {
+
     }
 
     private _fillDefault() {

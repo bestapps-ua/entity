@@ -1,4 +1,4 @@
-### version 1.0.39
+### version 1.0.40
 Added init method in EntitySQLModel
 
 ### Version 1.0.37
