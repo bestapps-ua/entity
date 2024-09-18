@@ -77,6 +77,7 @@ declare class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLMod
      */
     generateUid(entity: Entity, callback: any): void;
     generateUidAsync(entity: Entity): Promise<Entity>;
+    normalizeUid(uid: string): string;
     findFieldSchema(id: string): IEntitySQLMakeScheme;
     updateAsync(entity: Entity): Promise<Entity>;
     update(entity: Entity, callback: any): void;
