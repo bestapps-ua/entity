@@ -696,7 +696,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
      * @param callback
      */
     generateUid(entity: Entity, callback) {
-        let uid = uuid4();
+        let uid = this.normalizeUid(uuid4());
         if (entity.uid) {
             uid = entity.uid;
         }
@@ -715,6 +715,10 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
                 resolve(uid);
             });
         });
+    }
+
+    normalizeUid(uid: string){
+        return uid;
     }
 
     findFieldSchema(id: string): IEntitySQLMakeScheme {

@@ -1,3 +1,6 @@
+### version 1.0.41
+Added normalizeUid
+
 ### version 1.0.40
 Added init method in EntitySQLModel
 
