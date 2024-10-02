@@ -249,10 +249,15 @@ class EntityBaseSQLModel extends EntityCacheModel_1.default {
         let query = '';
         if (sort) {
             query += 'ORDER BY ';
-            if (!Array.isArray(sort)) {
-                sort = [sort];
+            if (typeof sort === 'string') {
+                query += ' ' + sort;
             }
-            make(this, sort);
+            else {
+                if (!Array.isArray(sort)) {
+                    sort = [sort];
+                }
+                make(this, sort);
+            }
         }
         return {
             query,

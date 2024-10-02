@@ -22,7 +22,7 @@ declare class EntityBaseSQLModel extends EntityCacheModel {
         data: string;
         values: any[];
     };
-    protected processSort(sort: IEntityItemsSort | IEntityItemsSort[]): {
+    protected processSort(sort: IEntityItemsSort | IEntityItemsSort[] | string): {
         query: string;
         values: any[];
     };

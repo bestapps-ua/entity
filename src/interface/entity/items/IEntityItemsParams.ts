@@ -8,7 +8,7 @@ interface IEntityItemsParams {
     filters?: IEntityItemsFilter;
     page?: number;
     limit?: number;
-    sort?: IEntityItemsSort | IEntityItemsSort[];
+    sort?: string | IEntityItemsSort | IEntityItemsSort[];
     group?: string | string[];
     native?: boolean;
     where?: IEntityItemsWhere|IEntityItemsWhere[]

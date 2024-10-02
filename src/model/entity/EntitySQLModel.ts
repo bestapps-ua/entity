@@ -468,7 +468,7 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             values = values.concat(res.values);
         }
         res = this.processSort(params.sort);
-        query += res.query;
+        query += res.query + ' ';
         if(res.values.length > 0) {
             values = values.concat(res.values);
         }

@@ -1,3 +1,6 @@
+### version 1.0.43
+sort: string
+
 ### version 1.0.41
 Added normalizeUid
 

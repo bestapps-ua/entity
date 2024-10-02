@@ -224,7 +224,7 @@ class EntityBaseSQLModel extends EntityCacheModel {
         };
     }
 
-    protected processSort(sort: IEntityItemsSort | IEntityItemsSort[]) {
+    protected processSort(sort: IEntityItemsSort | IEntityItemsSort[] | string) {
         let values = [];
 
         function make(me: EntityBaseSQLModel, sort: IEntityItemsSort[]) {
@@ -261,10 +261,14 @@ class EntityBaseSQLModel extends EntityCacheModel {
         let query = '';
         if (sort) {
             query += 'ORDER BY ';
-            if (!Array.isArray(sort)) {
-                sort = [sort];
+            if (typeof sort === 'string') {
+                query += ' ' + sort;
+            } else {
+                if (!Array.isArray(sort)) {
+                    sort = [sort];
+                }
+                make(this, sort);
             }
-            make(this, sort);
         }
         return {
             query,
