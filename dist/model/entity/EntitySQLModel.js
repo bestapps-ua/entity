@@ -530,6 +530,9 @@ class EntitySQLModel extends EntityBaseSQLModel_1.default {
             LIMIT 1
         `;
         this.sql.query(q, item.id, (err) => __awaiter(this, void 0, void 0, function* () {
+            GlobalEventModel_1.default.getEmitter().emit(Events_1.EVENT_ENTITY_DELETED, {
+                entity: item,
+            });
             yield this.cacheInvalidateAsync(item.id);
             callback && callback(err);
         }));

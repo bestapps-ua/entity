@@ -2,6 +2,7 @@
 
 const EVENT_ENTITY_CREATED = 'entity::created';
 const EVENT_ENTITY_UPDATED = 'entity::updated';
+const EVENT_ENTITY_DELETED = 'entity::deleted';
 const EVENT_SQL_CONNECTED = 'sql::connected';
 
 const EVENT_SQL_MODEL_LOADING = 'sql::model::loading';
@@ -15,4 +16,5 @@ export {
     EVENT_SQL_MODEL_LOADING,
     EVENT_SQL_MODEL_LOADED,
     EVENT_SQL_MODELS_LOADED,
+    EVENT_ENTITY_DELETED,
 };

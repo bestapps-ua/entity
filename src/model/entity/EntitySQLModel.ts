@@ -17,7 +17,7 @@ import {
     EVENT_ENTITY_UPDATED,
     EVENT_SQL_MODEL_LOADED,
     EVENT_SQL_MODEL_LOADING,
-    EVENT_SQL_CONNECTED
+    EVENT_SQL_CONNECTED, EVENT_ENTITY_DELETED
 } from "../event/Events";
 import RegistryModel from "../RegistryModel";
 
@@ -544,6 +544,9 @@ class EntitySQLModel extends EntityBaseSQLModel implements IEntitySQLModel {
             LIMIT 1
         `;
         this.sql.query(q, item.id, async (err) => {
+            globalEventModel.getEmitter().emit(EVENT_ENTITY_DELETED, {
+                entity: item,
+            });
             await this.cacheInvalidateAsync(item.id);
             callback && callback(err);
         });
