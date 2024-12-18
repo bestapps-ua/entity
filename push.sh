@@ -9,7 +9,7 @@ VERSION=$(cat package.json \
 npm run build
 git add dist/*
 git commit -m "$VERSION" package.json package-lock.json dist/ src/ push.sh;
-git push origin master;
+git push origin main;
 git tag $VERSION;
 git push origin $VERSION;
 npm publish --access=public
